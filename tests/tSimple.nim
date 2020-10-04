@@ -41,7 +41,7 @@ const exp4 = """
 
 suite "LaTeX DSL simple tests":
   test "A test":
-    let res = withLatex:
+    let res = latex:
       \usepackage[english, german]{random}{moreArg}:
         "more text"
       center:
@@ -53,7 +53,7 @@ suite "LaTeX DSL simple tests":
 
   test "See, another test":
     let lang = "german"
-    let res = withLatex:
+    let res = latex:
       \documentclass{article}
       \usepackage[`lang`]{babel}
       \usepackage[utf8]{inputenc}
@@ -62,13 +62,13 @@ suite "LaTeX DSL simple tests":
     check res == exp2
 
   test "Insertion of begin and end for blocks":
-    let res = withLatex:
+    let res = latex:
       center:
         "some random stuff"
     check res.strip == exp3.strip
 
   test "Nested blocks":
-    let res = withLatex:
+    let res = latex:
       center:
         figure:
           \includegraphics[width=r"0.8\textwidth"]{myImage}

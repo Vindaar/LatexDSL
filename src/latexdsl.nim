@@ -117,7 +117,7 @@ proc toTex(n: NimNode): NimNode =
       result = parseBody(n)
   else: result = parseBody(n)
 
-macro withLatex*(body: untyped): untyped =
+macro latex*(body: untyped): untyped =
   let res = ident"res"
   result = newStmtList()
   result.add quote do:
