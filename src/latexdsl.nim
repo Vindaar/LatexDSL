@@ -130,5 +130,3 @@ macro withLatex*(body: untyped): untyped =
     block:
       `result`
       `res`
-
-  echo result.repr
