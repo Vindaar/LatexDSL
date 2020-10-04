@@ -1,8 +1,11 @@
-import ../latexdsl
+import ../src/latexdsl
 import unittest, strutils
 
 const exp1 = """
-\usepackage[english,german]{random}{moreArg}
+\begin{usepackage}[english,german]{random}{moreArg}
+more text
+\end{usepackage}
+
 
 \begin{center}
 yeah
@@ -46,7 +49,7 @@ suite "LaTeX DSL simple tests":
       \documentclass{article}
       figure[\textwidth]
       command[margin="2cm"]{test}
-    check res == exp1
+    check res.strip == exp1.strip
 
   test "See, another test":
     let lang = "german"
@@ -54,7 +57,7 @@ suite "LaTeX DSL simple tests":
       \documentclass{article}
       \usepackage[`lang`]{babel}
       \usepackage[utf8]{inputenc}
-      \newcolumntype{Y}{r">{\raggedleft\arraybackslash}X"}
+      \\newcolumntype{Y}{r">{\raggedleft\arraybackslash}X"}
 
     check res == exp2
 
