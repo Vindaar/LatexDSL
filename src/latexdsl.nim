@@ -1,6 +1,18 @@
 import macros, strformat, strutils
 export strformat
 
+import latexdsl / valid_tex_commands
+
+proc isTexCommand(n: NimNode): bool =
+  ## compile time check whether the given is a valid TeX command
+  let nStr = n.strVal
+  let val = parseEnum[LatexCommands](nStr, INVALID_CMD)
+  result = val != INVALID_CMD
+
+template checkCmd(arg: NimNode): untyped =
+  if not isTexCommand(arg):
+    error("Invalid tex command: " & $(arg.strVal))
+
 template `\`(n: untyped): string = "\\" & $n
 
 proc makeOpts*(name: string, args: varargs[string]): string =
@@ -58,14 +70,32 @@ proc parseBody(n: NimNode): NimNode =
   of nnkCurlyExpr:
     result = toTex(n[0]) & parseCurly(n[1])
   of nnkCall:
-    var m = n[0]
-    let name = extractName(m)
-    expectKind(n[1], nnkStmtList)
-    result = parseStmtList(name, m, n[1])
+    let name = extractName(n[0])
+    if name.strVal != "&":
+      # otherwise we're calling this proc again and have already checked the
+      # actual command!
+      checkCmd(name)
+    expectKind(n[^1], nnkStmtList)
+    result = parseStmtList(name, n[0], n[1])
   of nnkStmtList:
     doAssert false, "Handled above"
   of nnkPrefix:
-    result = toTex(n[0]) & toTex(n[1])
+    # TODO: prefix can have more than 2 children!
+    echo n.treeRepr
+    let name = extractName(n[1])
+    ## We only check the name for prefixed commands, if they use a single `\`
+    ## By using `\\` one can circumvent the check to use any command
+    if n[0].strVal == "\\":
+      checkCmd(name)
+    elif n[0].strVal != "\\\\":
+      error("Invalid command prefix " & $(n[0].strVal))
+    if n.len == 3 and n[^1].kind == nnkStmtList:
+      # \ prefix and a block at the end. In this case, the block logic takes precedent.
+      # We drop the `\` from here on
+      result = parseStmtList(name, toTex(n[1]), n[2])
+    elif n.len == 2:
+      result = toTex(n[0]) & toTex(n[1])
+    else: error("Invalid nnkPrefix tree with " & $(n.len) & " child nodes!")
   of nnkExprEqExpr:
     result = toTex(n[0]) & newLit("=") & toTex(n[1])
   else:
@@ -75,11 +105,19 @@ proc toTex(n: NimNode): NimNode =
   case n.kind
   of nnkSym: result = n
   of nnkAccQuoted: result = n[0]
-  of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit: result = newLit n.strVal
+  of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit:
+    let nStr = n.strVal
+    result = if nStr == "\\\\": newLit "\\" else: newLit nStr
   of nnkNilLit: result = newLit ""
+  of nnkCall:
+    if n[0].strVal == "&":
+      # already called, just return n
+      result = n
+    else:
+      result = parseBody(n)
   else: result = parseBody(n)
 
-macro withLatex*(body: untyped): untyped =
+macro latex*(body: untyped): untyped =
   let res = ident"res"
   result = newStmtList()
   result.add quote do:

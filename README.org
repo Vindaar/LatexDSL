@@ -1,10 +1,12 @@
 * LaTeX DSL
 
-If you ever wanted to write the following in Nim:
+=latexdsl= provides a convenient macro (and very soon a bunch of
+helper templates / macros) to generate LaTeX code from Nim.
 
+The very short version is, it allows you to write:
 #+begin_src nim
 let lang = "english"
-let res = withLatex:
+let res = latex:
   \documentclass{article}
   \usepackage[`lang`]{babel}
   \usepackage[utf8]{inputenc}
@@ -16,33 +18,73 @@ to get:
 \usepackage[utf8]{inputenc}
 #+end_src
 
-Then this package is for you!
+Now this might not seem all that useful by itself "I can just write a
+string literal with string interpolation".
 
-It even supports multiple ={}= such as in the following useless command:
+Yes, except: Every TeX command either entered using explicit backslash
+will be checked at compile time against an =enum= of allowed TeX
+commands! This means we get compile time checks without having to
+manually write a very large number of helper templates like the following:
 #+begin_src nim
-let res = withLatex:
-  \usepackage[english, german]{randomPackage}{moreArg}
+template bold(arg: untyped): untyped = "\textbf{" & $arg & "}"
 #+end_src
-and automatically turns blocks into =begin/end= pairs:
+For limited TeX application in a project that's certainly enough but
+definitely not scalable.
+
+The same is done for every command that uses has a statement list as
+its argument. That's also where another convenience feature comes in:
+any Nim block will be understood as a
+#+begin_src latex
+\begin{command} 
+your TeX
+\end{command}
+#+end_src
+command. So the following:
 #+begin_src nim :results raw
 import latexdsl
-let res = withLatex:
+let res = latex:
   center:
     figure:
       \includegraphics[width=r"0.8\textwidth"]{myImage}
 echo res
 #+end_src
+(Note the usage of raw string literals to work around stuff that isn't
+allowed as Nim syntax)
 
+does generate what you would expect:
 #+begin_src latex
 \begin{center}
-
 \begin{figure}
 \includegraphics[width=0.8\textwidth]{myImage}
 \end{figure}
-
 \end{center}
 #+end_src
 
 
+Any optional parameter within =[]= will simply be handed as is into
+the result. The same is true for arguments within ={}= or any other
+command.
 
+The checks are done on:
+- anything starting with a =\=: =\myCommandToBeChecked=
+- anything that has opens its own block:
+  #+begin_src nim
+  let res = latex:
+    blockCommand[anOption]{anArgument}{anotherArument}:
+      "Some random stuff here"
+      \checkMe
+  #+end_src
+  Here =blockCommand= and =\checkMe= will be checked for validity
+  while the other identifiers won't be.
 
+In case a command is not part of the =enum= yet, you can omit the CT
+check by prepending with two =\\= instead of one.
+
+** Soon to come
+
+Soon there will be convienience features to e.g. turn a number of same
+length Nim sequences to a LaTeX table or helper templates to create a
+figure.
+
+In addition to that the compile time checking =enum= will be
+extendeable at CT using =registerTexCommand=.
