@@ -70,7 +70,7 @@ The checks are done on:
 - anything that has opens its own block:
   #+begin_src nim
   let res = latex:
-    blockCommand[anOption]{anArgument}{anotherArument}:
+    blockCommand[anOption]{anArgument}{anotherArgument}:
       "Some random stuff here"
       \checkMe
   #+end_src
@@ -82,9 +82,9 @@ check by prepending with two =\\= instead of one.
 
 ** Soon to come
 
-Soon there will be convienience features to e.g. turn a number of same
+Soon there will be convenience features to e.g. turn a number of same
 length Nim sequences to a LaTeX table or helper templates to create a
 figure.
 
 In addition to that the compile time checking =enum= will be
-extendeable at CT using =registerTexCommand=.
+extendable at CT using =registerTexCommand=.
