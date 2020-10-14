@@ -39,8 +39,16 @@ const exp4 = """
 \end{center}
 """
 
+const expFigure = """
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{/tmp/my_figure.pdf}
+\caption{A fancy plot it is!}
+\end{figure}
+"""
+
 suite "LaTeX DSL simple tests":
-  test "A test":
+  test "Multiple TeX statementsn":
     let res = latex:
       \usepackage[english, german]{random}{moreArg}:
         "more text"
@@ -51,7 +59,7 @@ suite "LaTeX DSL simple tests":
       command[margin="2cm"]{test}
     check res.strip == exp1.strip
 
-  test "See, another test":
+  test "Multiple statements including Nim symbol interpolation":
     let lang = "german"
     let res = latex:
       \documentclass{article}
@@ -73,3 +81,28 @@ suite "LaTeX DSL simple tests":
         figure:
           \includegraphics[width=r"0.8\textwidth"]{myImage}
     check res.strip == exp4.strip
+
+
+  test "textwidth/height":
+    check textwidth() == "\\textwidth"
+    check textheight() == "\\textheight"
+    check textwidth(0.8) == "0.8\\textwidth"
+    check textheight(0.8) == "0.8\\textheight"
+
+  test "Insert figure using `figure` func":
+    let path = "/tmp/my_figure.pdf"
+    let caption = "A fancy plot it is!"
+    let res = figure(path, caption, width = textwidth(0.8))
+    check res.strip == expFigure.strip
+
+  test "`figure` raises if neither width nor height given":
+    let path = "/tmp/my_figure.pdf"
+    let caption = "A fancy plot it is!"
+    doAssertRaises(ValueError):
+      let res = figure(path, caption)
+
+  test "Checking for file in `figure` works as expected":
+    let path = "/tmp/my_figure.pdf"
+    let caption = "A fancy plot it is!"
+    doAssertRaises(AssertionError):
+      let res = figure(path, caption, width = textwidth(0.8), checkFile = true)
