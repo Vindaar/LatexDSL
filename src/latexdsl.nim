@@ -1,7 +1,16 @@
-import macros, strformat, strutils
+import macros, strformat, strutils, os, sequtils
 export strformat
 
 import latexdsl / valid_tex_commands
+
+proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
+
+proc `&`(s: varargs[string]): string =
+  if s.len == 0: result = ""
+  elif s.len == 1: result = s[0]
+  else:
+    for ch in s:
+      result &= ch
 
 proc isTexCommand(n: NimNode): bool =
   ## compile time check whether the given is a valid TeX command
@@ -46,8 +55,13 @@ proc parseCurly(n: NimNode): NimNode =
 proc parseStmtList(name, header, n: NimNode): NimNode =
   if n.len > 1:
     result = nnkCall.newTree(ident"&")
+    var i = 0
     for ch in n:
-      result.add toTex(ch)
+      if i == 0:
+        result.add toTex(ch)
+      else:
+        result.add newLit("\n") & toTex(ch)
+      inc i
   elif n.len == 1:
     result = toTex(n[0])
   else:
@@ -60,8 +74,6 @@ proc parseStmtList(name, header, n: NimNode): NimNode =
 proc extractName(n: NimNode): NimNode =
   if n.len == 0: result = n
   else: result = extractName(n[0])
-
-proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
 
 proc parseBody(n: NimNode): NimNode =
   case n.kind
@@ -110,7 +122,8 @@ proc toTex(n: NimNode): NimNode =
     result = if nStr == "\\\\": newLit "\\" else: newLit nStr
   of nnkNilLit: result = newLit ""
   of nnkCall:
-    if n[0].strVal == "&":
+    echo n.treeRepr
+    if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&":
       # already called, just return n
       result = n
     else:
@@ -130,3 +143,45 @@ macro latex*(body: untyped): untyped =
     block:
       `result`
       `res`
+func textwidth*[T](arg: T = ""): string = $arg & "\\textwidth"
+func textheight*[T](arg: T = ""): string = $arg & "\\textheight"
+
+# sugar to make using this even neater
+func figure*(path, caption: string,
+             width = "",
+             height = "",
+             location = "htbp",
+             label = "",
+             checkFile = false): string =
+  ## creates a full figure environment, with a given `caption`.
+  ## Either a width or height has to passed, otherwise it will raise
+  ## `ValueError`.
+  ## The figure placement can be controlled via `location`.
+  ## Finally, if `checkFile` is set to true we perform a runtime check
+  ## on whether the path points to a valid existing file. In many cases
+  ## this is not desired behavior (TeX code may be generated for figures,
+  ## which will be generated at a later time), but it can provide a convenient
+  ## check if one piece of code is generating both plot and TeX code!
+  let size = if width.len > 0:
+               "width=" & width
+             elif height.len > 0:
+               "height=" & height
+             else:
+               raise newException(ValueError, "Please hand either a width or a height!")
+  if checkFile:
+    doAssert existsFile(path), "The file " & $path & " for which to generate TeX " &
+      "doesn't exist yet!"
+  if label.len == 0:
+    result = latex:
+      figure[`location`]:
+        \centering
+        \includegraphics[`size`]{`path`}
+        \caption{`caption`}
+  else:
+    result = latex:
+      figure[`location`]:
+        \centering
+        \includegraphics[`size`]{`path`}
+        \caption{`caption`}
+        \label{`label`}
+
