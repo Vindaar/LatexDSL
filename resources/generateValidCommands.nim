@@ -106,6 +106,13 @@ proc writeValidCommandsFile(validCommands: HashSet[string]) =
   var outf = open("valid_tex_commands.nim", fmWrite)
   outf.write(outputTmpl)
   var line = "    INVALID_CMD, "
+
+  func addCmd(line: var string, cmd: string) =
+    if cmd.allCharsInSet(Letters) and cmd notin NimKeywords:
+      line.add cmd & ", "
+    else:
+      line.add "`" & cmd & "`, "
+
   for cmd in validCommands.toSeq.sorted:
     if cmd.len == 0 or
        '\0' in cmd or
@@ -115,14 +122,12 @@ proc writeValidCommandsFile(validCommands: HashSet[string]) =
        ':' in cmd:
       continue
     if line.len + cmd.len + 2 < 80:
-      if cmd.allCharsInSet(Letters) and cmd notin NimKeywords:
-        line.add cmd & ", "
-      else:
-        line.add "`" & cmd & "`, "
+      line.addCmd(cmd)
     else:
       line.add "\n"
       outf.write(line)
       line = "    "
+      line.addCmd(cmd)
   if line.len > 0:
     line = line.strip(leading = false, chars = {',', ' '})
     line.add "\n"
