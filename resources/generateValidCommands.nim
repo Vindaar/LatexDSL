@@ -17,7 +17,8 @@ type
 """
 
 const ManualCommandsToAdd = toHashSet(["usepackage", "documentclass", "si", "SI",
-                                       "includegraphics", "num"])
+                                       "includegraphics", "num", "centering", "label",
+                                       "toprule", "midrule", "bottomrule"])
 
 const NimKeywords = toHashSet(["addr", "and", "as", "asm",
                                "bind", "block", "break",
