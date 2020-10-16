@@ -12,6 +12,19 @@ type
     df.row(int) is ValueLike
     df.len is int
 
+  AlignmentKind = enum
+    akNone = ""
+    akLeft = "left"
+    akRight = "right"
+    akCenter = "center"
+
+proc toStr(akKind: AlignmentKind): string =
+  case akKind
+  of akNone: result = ""
+  of akLeft: result = "l"
+  of akRight: result = "r"
+  of akCenter: result = "c"
+
 proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
 
 proc `&`(s: varargs[string]): string =
@@ -195,3 +208,70 @@ func figure*(path, caption: string,
         \caption{`caption`}
         \label{`label`}
 
+proc toTexTable*(df: DataFrameLike,
+                 caption = "",
+                 label = "",
+                 alignment = "left",
+                 location = "htbp"): string =
+  ## Turns a DataFrame into a TeX table.
+  ## If `alignment` it overrides the `tabular` alignment argument (e.g. `l l l`)
+  ## It's possible to set the alignment via:
+  ## - left, right, center
+  ##   then the number of columns is determined from the data frame, but they are
+  ##   all aligned accordingly.
+  ## - hand a valid TeX string for alignment
+  let keys = df.getKeys()
+  let header = keys.join(" & ") & "\\\\"
+  var rows: string
+  for i in 0 ..< df.len:
+    var row = ""
+    let dfRow = df.row(i)
+    for j, k in keys:
+      if j == 0:
+        row.add $dfRow[k]
+      else:
+        row.add " & " & $dfRow[k]
+    if i < df.len - 1:
+      rows.add row & "\\\\\n"
+    else:
+      rows.add row
+
+  let align = block:
+    var align = ""
+    var akKind = parseEnum[AlignmentKind](alignment, akNone)
+    if akKind == akNone and alignment.len > 0:
+      # use user given alignment
+      align = alignment
+      doAssert align.strip.split(Whitespace).len == keys.len, "Given user alignment does not " &
+        "assign all columns of the DataFrame! Alignment: " & $alignment & " for DataFrame with" &
+        $keys.len & " columns."
+    else:
+      # determine the alignment based on the number of columns
+      akKind = if akKind == akNone: akLeft else: akKind
+      align = toSeq(0 ..< keys.len).mapIt(toStr(akKind)).join(" ")
+    align
+
+  # construct only the table body without possible label, caption
+  var mainBody = latex:
+    \centering
+    \tabular{`align`}:
+      \toprule
+      `header`
+      \midrule
+      `rows`
+      \bottomrule
+
+  if caption.len > 0:
+    ## NOTE: if we try to do `mainBody.add` we run into some bizarre issue
+    ## where it complains about `{}` being an undeclared identifier. What's the
+    ## problem here?
+    let tmp = latex:
+      \caption{`caption`}
+    mainBody.add tmp
+  if label.len > 0:
+    let tmp = latex:
+      \label{`label`}
+    mainBody.add tmp
+  result = latex:
+    \table[`location`]:
+      `mainBody`
