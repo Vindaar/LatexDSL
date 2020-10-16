@@ -14,8 +14,8 @@ let df = complexCalculation()
 let path = "examples/dummy_plot.png"
 ggplot(df, aes(Group, Num)) + 
   geom_bar(stat = "identity") + 
-  xlab("Number of participants") +
-  ylab("Age group") +
+  xlab("Age group") +
+  ylab("Number of participants") +
   ggsave(path)
 
 # now we could construct a TeX figure and table for the data manually,

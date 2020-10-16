@@ -104,8 +104,8 @@ let df = complexCalculation()
 let path = "examples/dummy_plot.png"
 ggplot(df, aes(Group, Num)) + 
   geom_bar(stat = "identity") + 
-  xlab("Number of participants") +
-  ylab("Age group") +
+  xlab("Age group") +
+  ylab("Number of participants") +
   ggsave(path)
 
 # now we could construct a TeX figure and table for the data manually,
@@ -149,7 +149,7 @@ unformatted output):
 #+begin_src TeX
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\textwidth]{examples/dummy_plot.pdf}
+\includegraphics[width=0.8\textwidth]{examples/dummy_plot.png}
 \label{fig:sec:ana:participants}
 \caption{Number of participants in the experiment by age group. Group Group 2 had the most participants with 43 subjects.}
 
