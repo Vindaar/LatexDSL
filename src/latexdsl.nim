@@ -141,7 +141,7 @@ proc toTex(n: NimNode): NimNode =
   else: result = parseBody(n)
 
 macro latex*(body: untyped): untyped =
-  let res = ident"res"
+  let res = genSym(nskVar, "res")
   result = newStmtList()
   result.add quote do:
     var `res`: string
