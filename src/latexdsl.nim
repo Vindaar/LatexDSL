@@ -3,6 +3,15 @@ export strformat
 
 import latexdsl / valid_tex_commands
 
+type
+  ValueLike = concept v
+    $v[string] is string
+    $v is string
+  DataFrameLike = concept df
+    df.getKeys() is seq[string]
+    df.row(int) is ValueLike
+    df.len is int
+
 proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
 
 proc `&`(s: varargs[string]): string =
