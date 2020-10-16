@@ -1,3 +1,8 @@
+* v0.1.2
+- improve example in README to make use of =latex= macro for the
+  captions. Why have it and not use it?
+- allow =nnkRefTy= (for =\ref=), =nnkCurly= and check commands only if
+  not a nested =nnkAccQuoted=
 * v0.1.1
 - add sugar:
   - =figure=: create TeX code for a figure, including the option to
