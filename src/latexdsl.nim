@@ -147,6 +147,7 @@ proc parseBody(n: NimNode): NimNode =
     doAssert n.len == 2
     result = toTex(n[0]) & toTex(n[1])
   of nnkRefTy:
+    ## NOTE: this corresponds to the `\ref` command.
     result = newLit"ref" & toTex(n[0])
   else:
     error("Invalid kind " & $n.kind)
