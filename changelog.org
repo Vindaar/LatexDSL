@@ -1,0 +1,10 @@
+* v0.1.1
+- add sugar:
+  - =figure=: create TeX code for a figure, including the option to
+    check whether the file exists at runtime
+  - =toTexTable=: converts something like a ggplotnim =DataFrame= to a
+    TeX table
+- fix an issue with accidentally looking at already parsed TeX code again
+* v0.1.0
+- basic =latex= macro with compile time checks of most important TeX
+  commands is working, allowing for Nim symbol interpolation
