@@ -36,13 +36,13 @@ let cap = "Number of participants in the experiment by age group. Group " &
   &"{maxGroup[\"Group\", 0]} had the most participants with {maxGroup[\"Num\", 0]}" &
   " subjects."
 # and add a reference to the table we will create 
-let figCap = cap & "The data used for the figure is found in tab. \ref{" & $tabLab & "."
-let fig = figure(path, caption = cap, label = figLab, width = textwidth(0.8),
+let figCap = cap & "The data used for the figure is found in tab. \\ref{" & $tabLab & "."
+let fig = figure(path, caption = figCap, label = figLab, width = textwidth(0.8),
                  checkFile = true)
 # NOTE: The `checkFile` argument performs a runtime check on the given path to make
 # sure the file that is supposed to be put into a TeX document actually exists!
 # and finally for the table:
-let tabCap = cap & "The data is plotted in fig. \ref{" & $figLab & "."
+let tabCap = cap & "The data is plotted in fig. \\ref{" & $figLab & "."
 let tab = toTexTable(df, caption = tabCap, label = tabLab)
 
 # and from here we could insert the generated TeX code directly into a TeX document.
