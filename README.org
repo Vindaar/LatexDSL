@@ -21,17 +21,18 @@ to get:
 Now this might not seem all that useful by itself "I can just write a
 string literal with string interpolation".
 
-Yes, except: Every TeX command either entered using explicit backslash
-will be checked at compile time against an =enum= of allowed TeX
-commands! This means we get compile time checks without having to
-manually write a very large number of helper templates like the following:
+Yes, _except_: Every TeX command either entered using explicit
+backslash or opening a statement list will be checked at compile time
+against an =enum= of allowed TeX commands! This means we get compile
+time checks without having to manually write a very large number of
+helper templates like the following:
 #+begin_src nim
-template bold(arg: untyped): untyped = "\textbf{" & $arg & "}"
+template bold(arg: untyped): untyped = "\\textbf{" & $arg & "}"
 #+end_src
 For limited TeX application in a project that's certainly enough but
 definitely not scalable.
 
-The same is done for every command that uses has a statement list as
+The same is done for every command that has a statement list as
 its argument. That's also where another convenience feature comes in:
 any Nim block will be understood as a
 #+begin_src latex
@@ -65,9 +66,9 @@ Any optional parameter within =[]= will simply be handed as is into
 the result. The same is true for arguments within ={}= or any other
 command.
 
-The checks are done on:
+The compile time checks are done on:
 - anything starting with a =\=: =\myCommandToBeChecked=
-- anything that has opens its own block:
+- anything that opens its own block:
   #+begin_src nim
   let res = latex:
     blockCommand[anOption]{anArgument}{anotherArgument}:
