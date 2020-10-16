@@ -153,7 +153,8 @@ unformatted output):
 \centering
 \includegraphics[width=0.8\textwidth]{examples/dummy_plot.png}
 \label{fig:sec:ana:participants}
-\caption{Number of participants in the experiment by age group. Group Group 2 had the most participants with 43 subjects.The data used for the figure is found in tab. \ref{tab:sec:ana:participants.}
+\caption{Number of participants in the experiment by age group. Group Group 2 had the most participants with 43 subjects.The data used for the figure is found in tab. \ref{tab:sec:ana:participants}.
+}
 
 \end{figure}
 
@@ -173,7 +174,8 @@ Num & Group\\
 \bottomrule
 \end{tabular}
 
-\caption{Number of participants in the experiment by age group. Group Group 2 had the most participants with 43 subjects.The data is plotted in fig. \ref{fig:sec:ana:participants.}
+\caption{Number of participants in the experiment by age group. Group Group 2 had the most participants with 43 subjects.The data is plotted in fig. \ref{fig:sec:ana:participants}.
+}
 \label{tab:sec:ana:participants}
 
 \end{table}
