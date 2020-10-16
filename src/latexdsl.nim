@@ -97,12 +97,23 @@ proc extractName(n: NimNode): NimNode =
   if n.len == 0: result = n
   else: result = extractName(n[0])
 
+proc isNotAccQuote(n: NimNode): bool =
+  ## recursively check if first child contains accented quote node
+  if n.len > 0 and n.kind != nnkAccQuoted:
+    result = isNotAccQuote(n[0])
+  elif n.len > 0 and n.kind == nnkAccQuoted:
+    result = false
+  else:
+    result = true
+
 proc parseBody(n: NimNode): NimNode =
   case n.kind
   of nnkBracketExpr:
     result = parseBracket(n)
   of nnkCurlyExpr:
     result = toTex(n[0]) & parseCurly(n[1])
+  of nnkCurly:
+    result = parseCurly(n[0])
   of nnkCall:
     let name = extractName(n[0])
     if name.strVal != "&":
@@ -118,9 +129,10 @@ proc parseBody(n: NimNode): NimNode =
     let name = extractName(n[1])
     ## We only check the name for prefixed commands, if they use a single `\`
     ## By using `\\` one can circumvent the check to use any command
-    if n[0].strVal == "\\":
+    let hasNoAccQuote = n[1].isNotAccQuote()
+    if n[0].strVal == "\\" and hasNoAccQuote:
       checkCmd(name)
-    elif n[0].strVal != "\\\\":
+    elif n[0].strVal != "\\\\" and hasNoAccQuote:
       error("Invalid command prefix " & $(n[0].strVal))
     if n.len == 3 and n[^1].kind == nnkStmtList:
       # \ prefix and a block at the end. In this case, the block logic takes precedent.
@@ -131,6 +143,11 @@ proc parseBody(n: NimNode): NimNode =
     else: error("Invalid nnkPrefix tree with " & $(n.len) & " child nodes!")
   of nnkExprEqExpr:
     result = toTex(n[0]) & newLit("=") & toTex(n[1])
+  of nnkCommand:
+    doAssert n.len == 2
+    result = toTex(n[0]) & toTex(n[1])
+  of nnkRefTy:
+    result = newLit"ref" & toTex(n[0])
   else:
     error("Invalid kind " & $n.kind)
 
