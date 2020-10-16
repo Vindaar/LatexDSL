@@ -142,7 +142,7 @@ echo tab
 #+end_src
 Which generates the following plot:
 
-[[./examples//home/basti/CastData/ExternCode/LatexDSL/examples/dummy_plot.png]]
+[[./examples/dummy_plot.png]]
 
 and outputs the following TeX code to the terminal (this is the
 unformatted output):
