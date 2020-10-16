@@ -115,7 +115,6 @@ proc parseBody(n: NimNode): NimNode =
     doAssert false, "Handled above"
   of nnkPrefix:
     # TODO: prefix can have more than 2 children!
-    echo n.treeRepr
     let name = extractName(n[1])
     ## We only check the name for prefixed commands, if they use a single `\`
     ## By using `\\` one can circumvent the check to use any command
@@ -144,7 +143,6 @@ proc toTex(n: NimNode): NimNode =
     result = if nStr == "\\\\": newLit "\\" else: newLit nStr
   of nnkNilLit: result = newLit ""
   of nnkCall:
-    echo n.treeRepr
     if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&" or
       n[0].kind == nnkSym:
       # already called, just return n
