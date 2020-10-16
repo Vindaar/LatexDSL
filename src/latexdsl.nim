@@ -168,7 +168,8 @@ func textwidth*[T](arg: T = ""): string = $arg & "\\textwidth"
 func textheight*[T](arg: T = ""): string = $arg & "\\textheight"
 
 # sugar to make using this even neater
-func figure*(path, caption: string,
+func figure*(path: string,
+             caption = "",
              width = "",
              height = "",
              location = "htbp",
@@ -192,19 +193,21 @@ func figure*(path, caption: string,
   if checkFile:
     doAssert existsFile(path), "The file " & $path & " for which to generate TeX " &
       "doesn't exist yet!"
-  if label.len == 0:
-    result = latex:
+  var mainBody = latex:
+    \centering
+    \includegraphics[`size`]{`path`}
+
+  if label.len > 0:
+    let tmp = latex:
+      \label{`label`}
+    mainBody.add tmp
+  if caption.len > 0:
+    let tmp = latex:
+      \caption{`caption`}
+    mainBody.add tmp
+  result = latex:
       figure[`location`]:
-        \centering
-        \includegraphics[`size`]{`path`}
-        \caption{`caption`}
-  else:
-    result = latex:
-      figure[`location`]:
-        \centering
-        \includegraphics[`size`]{`path`}
-        \caption{`caption`}
-        \label{`label`}
+        `mainBody`
 
 proc toTexTable*(df: DataFrameLike,
                  caption = "",

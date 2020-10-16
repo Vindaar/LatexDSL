@@ -44,6 +44,7 @@ const expFigure = """
 \centering
 \includegraphics[width=0.8\textwidth]{/tmp/my_figure.pdf}
 \caption{A fancy plot it is!}
+
 \end{figure}
 """
 
