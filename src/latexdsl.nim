@@ -132,7 +132,8 @@ proc toTex(n: NimNode): NimNode =
   of nnkNilLit: result = newLit ""
   of nnkCall:
     echo n.treeRepr
-    if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&":
+    if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&" or
+      n[0].kind == nnkSym:
       # already called, just return n
       result = n
     else:
