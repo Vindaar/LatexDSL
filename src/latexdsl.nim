@@ -153,6 +153,17 @@ proc parseBody(n: NimNode): NimNode =
   of nnkRefTy:
     ## NOTE: this corresponds to the `\ref` command.
     result = newLit"ref" & toTex(n[0])
+  of nnkPragma:
+    ## Workaround for multiline `{}` arguments with multiple lines starting with `\` commands
+    var nStmts = nnkStmtList.newTree()
+    for ch in n:
+      nStmts.add ch
+    result = parseCurly(nStmts)
+  of nnkPragmaExpr:
+    doAssert n.len == 2
+    result = toTex(n[0]) & toTex(n[1])
+  of nnkInfix:
+    result = toTex(n[1]) & toTex(n[0]) & toTex(n[2])
   else:
     error("Invalid kind " & $n.kind)
 
