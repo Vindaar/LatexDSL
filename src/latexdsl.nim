@@ -27,7 +27,7 @@ proc toStr(akKind: AlignmentKind): string =
 
 proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
 
-proc `&`(s: varargs[string]): string =
+proc `&`*(s: varargs[string]): string =
   if s.len == 0: result = ""
   elif s.len == 1: result = s[0]
   else:
