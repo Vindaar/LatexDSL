@@ -16,9 +16,10 @@ type
   LatexCommands* = enum
 """
 
-const ManualCommandsToAdd = toHashSet(["usepackage", "documentclass", "si", "SI",
-                                       "includegraphics", "num", "centering", "label",
-                                       "toprule", "midrule", "bottomrule"])
+const ManualCommandsToAdd = toHashSet(
+  ["usepackage", "documentclass", "si", "SI", "includegraphics", "num", "centering",
+   "label", "toprule", "midrule", "bottomrule", "newcommand", "invisiblesection",
+   "addcontentsline", "sectionmark", "refstepcounter", "newcolumntype", "subsectionmark"])
 
 const NimKeywords = toHashSet(["addr", "and", "as", "asm",
                                "bind", "block", "break",
