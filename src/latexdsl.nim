@@ -174,6 +174,7 @@ proc toTex(n: NimNode): NimNode =
   of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit:
     let nStr = n.strVal
     result = if nStr == "\\\\": newLit "\\" else: newLit nStr
+  of nnkIntLit, nnkFloatLit: result = n.toStrLit
   of nnkNilLit: result = newLit ""
   of nnkCall:
     if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&" or
