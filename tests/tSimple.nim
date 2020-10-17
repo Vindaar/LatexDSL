@@ -108,6 +108,20 @@ suite "LaTeX DSL simple tests":
     doAssertRaises(AssertionError):
       let res = figure(path, caption, width = textwidth(0.8), checkFile = true)
 
+  test "Multiline `{}` using pragma syntax":
+    let exp = """
+\newcommand\invisiblesection[1]{\refstepcounter{section}
+\addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}
+\sectionmark{#1}}
+"""
+    let res = latex:
+      \newcommand\invisiblesection[1]{.
+        \refstepcounter{section}
+        \addcontentsline{toc}{section}{r"\protect\numberline{\thesection}#1"}
+        \sectionmark{"#1"}
+      .}
+    check res.strip == exp.strip
+
 import ggplotnim
 suite "ggplotnim DF to table":
   let x = @[1, 2, 3, 4, 5]
