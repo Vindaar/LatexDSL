@@ -182,6 +182,45 @@ Num & Group\\
 \end{table}
 #+end_src
 
+** Caveats
+
+Of course not every possible LaTeX code can be represented as valid
+Nim code. The known caveats and workarounds are listed here:
+
+- value + unit pairs, e.g.
+  #+begin_src TeX
+  margin=2cm
+  #+end_src
+  Use string literal:
+  #+begin_src nim
+  margin="2cm"
+  #+end_src
+- string literals for TeX commands, be sure to use raw literals, due
+  to =\r, \n, \p= etc being interpreted as control
+  characters. E.g. here we need string literals, because =#= is a Nim comment:
+  #+begin_src TeX
+  \protect\numberline{\thesection}#1
+  #+end_src
+  #+begin_src nim
+  r"\protect\numberline{\thesection}#1"
+  #+end_src
+- multiline arguments to ={}=:
+  #+begin_src TeX
+  \newcommand\invisiblesection[1]{
+    \refstepcounter{section}
+    \addcontentsline{toc}{section}{r"\protect\numberline{\thesection}#1"}
+    \sectionmark{"#1"}
+  }
+  #+end_src
+  Use Nim Pragma syntax for multiline blocks, ={. multiLine .}=:
+  #+begin_src nim
+  \newcommand\invisiblesection[1]{.
+    \refstepcounter{section}
+    \addcontentsline{toc}{section}{r"\protect\numberline{\thesection}#1"}
+    \sectionmark{"#1"}
+  .}
+  #+end_src
+
 ** Soon to come
 
 Soon there will be convenience features to e.g. turn a number of same
