@@ -74,7 +74,7 @@ proc parseCurly(n: NimNode): NimNode =
   result = quote do:
     makeArg(`nOut`)
 
-proc parseStmtList(name, header, n: NimNode): NimNode =
+proc parseStmtList(n: NimNode): NimNode =
   if n.len > 1:
     result = nnkCall.newTree(ident"&")
     var i = 0
@@ -88,10 +88,12 @@ proc parseStmtList(name, header, n: NimNode): NimNode =
     result = toTex(n[0])
   else:
     result = toTex(n)
+
+proc beginEndCall(name, header, n: NimNode): NimNode =
   result = nnkCall.newTree(ident"makeBeginEnd",
                            toTex(name),
                            toTex(header),
-                           result)
+                           n)
 
 proc extractName(n: NimNode): NimNode =
   if n.len == 0: result = n
@@ -121,9 +123,10 @@ proc parseBody(n: NimNode): NimNode =
       # actual command!
       checkCmd(name)
     expectKind(n[^1], nnkStmtList)
-    result = parseStmtList(name, n[0], n[1])
+    let stmtList = parseStmtList(n[1])
+    result = beginEndCall(name, n[0], stmtList)
   of nnkStmtList:
-    doAssert false, "Handled above"
+    result = parseStmtList(n)
   of nnkPrefix:
     # TODO: prefix can have more than 2 children!
     let name = extractName(n[1])
@@ -137,7 +140,8 @@ proc parseBody(n: NimNode): NimNode =
     if n.len == 3 and n[^1].kind == nnkStmtList:
       # \ prefix and a block at the end. In this case, the block logic takes precedent.
       # We drop the `\` from here on
-      result = parseStmtList(name, toTex(n[1]), n[2])
+      let stmtList = parseStmtList(n[2])
+      result = beginEndCall(name, toTex(n[1]), stmtList)
     elif n.len == 2:
       result = toTex(n[0]) & toTex(n[1])
     else: error("Invalid nnkPrefix tree with " & $(n.len) & " child nodes!")
