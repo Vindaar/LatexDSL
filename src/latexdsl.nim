@@ -243,6 +243,15 @@ func figure*(path: string,
       figure[`location`]:
         `mainBody`
 
+func tableRow*(s: varargs[string]): string =
+  ## simply joins a variable number of arguments to a valid row of a TeX table
+  for i, el in s:
+    if i == 0:
+      result.add el
+    else:
+      result.add " & " & el
+  result.add " \\\\\n"
+
 proc toTexTable*(df: DataFrameLike,
                  caption = "",
                  label = "",
