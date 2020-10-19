@@ -3,6 +3,8 @@
 - properly handle successive tex commands using =\= (nnkInfix)
 - add some caveats to README
 - add some tabularx commands to CT checked list
+- add =tableRows= helper proc to join a =varargs[string]= into a valid
+  TeX table row
 * v0.1.2
 - improve example in README to make use of =latex= macro for the
   captions. Why have it and not use it?
