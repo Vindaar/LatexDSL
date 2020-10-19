@@ -113,7 +113,11 @@ proc parseBody(n: NimNode): NimNode =
   of nnkBracketExpr:
     result = parseBracket(n)
   of nnkCurlyExpr:
-    result = toTex(n[0]) & parseCurly(n[1])
+    if n.len == 1:
+      # case of empty `{}`
+      result = toTex(n[0]) & parseCurly(newLit "")
+    else:
+      result = toTex(n[0]) & parseCurly(n[1])
   of nnkCurly:
     result = parseCurly(n[0])
   of nnkCall:
@@ -155,15 +159,34 @@ proc parseBody(n: NimNode): NimNode =
     result = newLit"ref" & toTex(n[0])
   of nnkPragma:
     ## Workaround for multiline `{}` arguments with multiple lines starting with `\` commands
-    var nStmts = nnkStmtList.newTree()
-    for ch in n:
-      nStmts.add ch
-    result = parseCurly(nStmts)
+    if n[0].kind == nnkExprColonExpr:
+      # in this case all children of `n` are actually children on n[0], it's just not
+      # parsed that way by the Nim parser
+      var nCall = nnkCall.newTree(n[0][0]) # [0][0] is the name + header of the tex begin/end block
+      var nStmts = newStmtList()
+      # other children of n[0] (RHS of ExprColonExpr) must become StmtList argument 1
+      for i in 1 ..< n[0].len:
+        nStmts.add n[0][i]
+      # finally all other arguments to the pragma are added
+      for i in 1 ..< n.len:
+        nStmts.add n[i]
+      nCall.add nStmts
+      result = toTex(nCall)
+    else:
+      # just convert to simple stmt liste
+      var nStmts = nnkStmtList.newTree()
+      for ch in n:
+        nStmts.add ch
+      result = parseCurly(toTex(nStmts))
   of nnkPragmaExpr:
     doAssert n.len == 2
-    result = toTex(n[0]) & toTex(n[1])
+    result = toTex(n[0]) & parseCurly(toTex(n[1]))
   of nnkInfix:
     result = toTex(n[1]) & toTex(n[0]) & toTex(n[2])
+  of nnkExprColonExpr:
+    doAssert n.len == 2
+    let name = extractName(n[0])
+    result = beginEndCall(name, toTex(n[0]), toTex(n[1]))
   else:
     error("Invalid kind " & $n.kind)
 
