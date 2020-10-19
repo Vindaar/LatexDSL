@@ -19,7 +19,9 @@ type
 const ManualCommandsToAdd = toHashSet(
   ["usepackage", "documentclass", "si", "SI", "includegraphics", "num", "centering",
    "label", "toprule", "midrule", "bottomrule", "newcommand", "invisiblesection",
-   "addcontentsline", "sectionmark", "refstepcounter", "newcolumntype", "subsectionmark"])
+   "invisiblesubsection", "quad", "underline",
+   "addcontentsline", "sectionmark", "refstepcounter", "newcolumntype", "subsectionmark",
+   "textbf", "textit", "tabularx"])
 
 const NimKeywords = toHashSet(["addr", "and", "as", "asm",
                                "bind", "block", "break",
