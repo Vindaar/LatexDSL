@@ -235,3 +235,25 @@ write the created TeX code into a document and compile it.
 In addition to that the compile time checking =enum= will be
 extendable at CT using =registerTexCommand=.
 
+** Just why?
+
+Well, I had to generate a bunch of PDFs from a database for the
+modules / courses in each degree at my department at Uni. At first I
+wrote the code for TeX generation based on pure string
+interpolation. But that hurt my soul knowing what Nim is capable
+of. 
+
+So that's why I decided to see how far one can push native TeX as
+valid Nim code. Pretty happy with it. 
+
+The main part of the code that generates the files mentioned above
+there can be found here:
+
+https://gist.github.com/Vindaar/545cf13fb09d75843ea0eef0dec1dae0
+
+(the full code is only hosted on an internal, non public Bitbucket
+instance unfortunately).
+
+Maybe still not the prettiest Nim code one has ever seen (and that
+file there is WIP anyway), but the TeX parts aren't gonna change a
+whole lot. At least I'm happy with this. :)
