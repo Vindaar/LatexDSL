@@ -220,6 +220,8 @@ Nim code. The known caveats and workarounds are listed here:
     \sectionmark{"#1"}
   .}
   #+end_src
+  NOTE: this still has a downside: you cannot do nested blocks inside
+  the pragma syntax!
 
 ** Soon to come
 
