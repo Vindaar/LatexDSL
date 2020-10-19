@@ -110,9 +110,9 @@ suite "LaTeX DSL simple tests":
 
   test "Multiline `{}` using pragma syntax":
     let exp = """
-\newcommand\invisiblesection[1]{\refstepcounter{section}
+\newcommand\invisiblesection[1]{{\refstepcounter{section}
 \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}
-\sectionmark{#1}}
+\sectionmark{#1}}}
 """
     let res = latex:
       \newcommand\invisiblesection[1]{.
@@ -121,6 +121,54 @@ suite "LaTeX DSL simple tests":
         \sectionmark{"#1"}
       .}
     check res.strip == exp.strip
+
+  test "Multiline `{}` using pragma syntax containing a block":
+    let body = "my body yay"
+    let exp = """
+\vspace{0.5cm}
+\framebox[\textwidth]{
+\begin{minipage}{\dimexpr\linewidth-2\fboxrule-2\fboxsep}
+my body yay
+\end{minipage}
+}
+\vspace{0.5cm} \\
+"""
+    let res = latex:
+      \vspace{"0.5cm"}
+      \framebox[\textwidth]{.
+        minipage{r"\dimexpr\linewidth-2\fboxrule-2\fboxsep"}:
+          `body`
+      .}
+      \vspace{"0.5cm"} r" \\"
+    check res.strip == exp.strip
+
+  test "Multiline `{}` using pragma syntax containing a block with multiple lines":
+    ## multiple lines in pragma syntax are special, because the AST is "wrong"
+    ## for our purposes and we have to rebuild it (see handling of nnkPragma
+    ## + nnkExprColonExpr).
+    let body = "my body yay"
+    let exp = """
+\vspace{0.5cm}
+\framebox[\textwidth]{
+\begin{minipage}{\dimexpr\linewidth-2\fboxrule-2\fboxsep}
+line 1
+my body yay
+line 3
+\end{minipage}
+}
+\vspace{0.5cm} \\
+"""
+    let res = latex:
+      \vspace{"0.5cm"}
+      \framebox[\textwidth]{.
+        minipage{r"\dimexpr\linewidth-2\fboxrule-2\fboxsep"}:
+          "line 1"
+          `body`
+          "line 3"
+      .}
+      \vspace{"0.5cm"} r" \\"
+    check res.strip == exp.strip
+
 
 import ggplotnim
 suite "ggplotnim DF to table":
