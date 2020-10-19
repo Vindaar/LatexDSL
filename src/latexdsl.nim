@@ -90,7 +90,7 @@ proc parseStmtList(n: NimNode): NimNode =
     result = toTex(n)
 
 proc beginEndCall(name, header, n: NimNode): NimNode =
-  result = nnkCall.newTree(ident"makeBeginEnd",
+  result = nnkCall.newTree(bindSym"makeBeginEnd",
                            toTex(name),
                            toTex(header),
                            n)
