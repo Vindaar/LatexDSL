@@ -139,6 +139,14 @@ proc parseBody(n: NimNode): NimNode =
     let hasNoAccQuote = n[1].isNotAccQuote()
     if n[0].strVal == "\\" and hasNoAccQuote:
       checkCmd(name)
+    elif n[0].strVal == "$" and n[1].kind == nnkPar:
+      # argument is a nim node to leave as is and return as a `&` call (to ignore it further)
+      return nnkCall.newTree(ident"&", n)
+    elif n[0].strVal == "$" and n[1].kind == nnkCommand and n[1][0].kind == nnkPar:
+      return nnkCall.newTree(
+        ident"&",
+        nnkCall.newTree(ident"$", n[1][0])) & parseBody(n[1][1])
+
     elif n[0].strVal != "\\\\" and hasNoAccQuote:
       error("Invalid command prefix " & $(n[0].strVal))
     if n.len == 3 and n[^1].kind == nnkStmtList:
@@ -153,7 +161,7 @@ proc parseBody(n: NimNode): NimNode =
     result = toTex(n[0]) & newLit("=") & toTex(n[1])
   of nnkCommand:
     doAssert n.len == 2
-    result = toTex(n[0]) & toTex(n[1])
+    result = toTex(n[0]) & newLit(" ") & toTex(n[1])
   of nnkRefTy:
     ## NOTE: this corresponds to the `\ref` command.
     result = newLit"ref" & toTex(n[0])
@@ -193,7 +201,7 @@ proc parseBody(n: NimNode): NimNode =
 proc toTex(n: NimNode): NimNode =
   case n.kind
   of nnkSym: result = n
-  of nnkAccQuoted: result = n[0]
+  of nnkAccQuoted: result = nnkCall.newTree(ident"$", n[0])
   of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit:
     let nStr = n.strVal
     result = if nStr == "\\\\": newLit "\\" else: newLit nStr
@@ -221,6 +229,7 @@ macro latex*(body: untyped): untyped =
     block:
       `result`
       `res`
+
 func textwidth*[T](arg: T = ""): string = $arg & "\\textwidth"
 func textheight*[T](arg: T = ""): string = $arg & "\\textheight"
 
