@@ -1,3 +1,11 @@
+* v0.1.4
+- improve handling of =nnkCommand= to automatically insert
+  spaces. This is for the typical case of writing multiple identifiers
+  after another to not have to add manual spaces.
+- handle =nnkBracket= and =nnkAsgn= (as well as =nnkIdent= to an
+  extent)
+- allow quoting of Nim expressions using =$(...)= syntax. Any Nim
+  expression that can be string evaluated using =$= is allowed in the construct.
 * v0.1.3
 - allow pragma syntax ={. ... .}= for multiline ={}= arguments
 - properly handle successive tex commands using =\= (nnkInfix)
