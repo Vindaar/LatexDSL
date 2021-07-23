@@ -195,6 +195,16 @@ proc parseBody(n: NimNode): NimNode =
     doAssert n.len == 2
     let name = extractName(n[0])
     result = beginEndCall(name, toTex(n[0]), toTex(n[1]))
+  of nnkBracket:
+    result = newLit("[")
+    for i, ch in n:
+      result = result & parseBody(ch)
+      if i < n.len - 1:
+        result = result & newLit(", ")
+    result = result & newLit("]")
+  of nnkAsgn:
+    result = parseBody(n[0]) & newLit("=") & parseBody(n[1])
+  of nnkIdent: result = toTex(n)
   else:
     error("Invalid kind " & $n.kind)
 
