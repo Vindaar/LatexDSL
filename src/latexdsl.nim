@@ -267,7 +267,7 @@ proc figure*(path: string,
              else:
                raise newException(ValueError, "Please hand either a width or a height!")
   if checkFile:
-    doAssert existsFile(path), "The file " & $path & " for which to generate TeX " &
+    doAssert fileExists(path), "The file " & $path & " for which to generate TeX " &
       "doesn't exist yet!"
   var mainBody = latex:
     \centering
