@@ -49,6 +49,7 @@ jobs:
           cd latexdsl
           nimble refresh -y
           nimble install -y
+          nimble develop -y
 
       - name: Run tests
         shell: bash
