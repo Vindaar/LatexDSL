@@ -132,7 +132,7 @@ suite "LaTeX DSL simple tests":
 my body yay
 \end{minipage}
 }
-\vspace{0.5cm} \\
+\vspace{0.5cm}  \\
 """
     let res = latex:
       \vspace{"0.5cm"}
@@ -157,7 +157,7 @@ my body yay
 line 3
 \end{minipage}
 }
-\vspace{0.5cm} \\
+\vspace{0.5cm}  \\
 """
     let res = latex:
       \vspace{"0.5cm"}
