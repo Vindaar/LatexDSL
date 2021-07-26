@@ -49,7 +49,6 @@ jobs:
           cd latexdsl
           nimble refresh -y
           nimble install -y
-          nimble install ggplotnim -y # for tests
 
       - name: Run tests
         shell: bash
