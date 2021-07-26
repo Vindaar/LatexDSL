@@ -1,5 +1,6 @@
 import ../src/latexdsl
 import unittest, strutils
+import ggplotnim
 
 const exp1 = """
 \begin{usepackage}[english,german]{random}{moreArg}
@@ -169,8 +170,6 @@ line 3
       \vspace{"0.5cm"} r" \\"
     check res.strip == exp.strip
 
-
-import ggplotnim
 suite "ggplotnim DF to table":
   let x = @[1, 2, 3, 4, 5]
   let y = @["a", "b", "c", "d", "e"]
