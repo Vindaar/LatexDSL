@@ -1,5 +1,4 @@
-import macros, strformat, strutils, os, sequtils
-export strformat
+import macros, strutils, strformat, os, sequtils
 
 import latexdsl / valid_tex_commands
 
