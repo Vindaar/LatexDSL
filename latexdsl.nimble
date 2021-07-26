@@ -9,7 +9,7 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.2.0"
-
+requires "ggplotnim"
 
 import os, strutils, strformat
 template canImport(x: untyped): untyped =
