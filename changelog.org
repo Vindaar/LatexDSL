@@ -1,3 +1,8 @@
+* v0.1.5
+- set up docs
+- set up CI via Github Actions
+- replace internal =&= =NimNode= concatenation by =&&=
+- do not export =strformat= any longer    
 * v0.1.4
 - improve handling of =nnkCommand= to automatically insert
   spaces. This is for the typical case of writing multiple identifiers
