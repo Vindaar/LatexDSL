@@ -25,9 +25,9 @@ proc toStr(akKind: AlignmentKind): string =
   of akRight: result = "r"
   of akCenter: result = "c"
 
-proc `&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&", n, m)
+proc `&&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&&", n, m)
 
-proc `&`*(s: varargs[string]): string =
+proc `&&`*(s: varargs[string]): string =
   if s.len == 0: result = ""
   elif s.len == 1: result = s[0]
   else:
@@ -42,9 +42,9 @@ proc isTexCommand(n: NimNode): bool =
 
 template checkCmd(arg: NimNode): untyped =
   if not isTexCommand(arg):
-    error("Invalid tex command: " & $(arg.strVal))
+    error("Invalid tex command: " && $(arg.strVal))
 
-template `\`(n: untyped): string = "\\" & $n
+template `\`(n: untyped): string = "\\" && $n
 
 proc makeOpts*(name: string, args: varargs[string]): string =
   result = &"{name}["
@@ -76,13 +76,13 @@ proc parseCurly(n: NimNode): NimNode =
 
 proc parseStmtList(n: NimNode): NimNode =
   if n.len > 1:
-    result = nnkCall.newTree(ident"&")
+    result = nnkCall.newTree(ident"&&")
     var i = 0
     for ch in n:
       if i == 0:
         result.add toTex(ch)
       else:
-        result.add newLit("\n") & toTex(ch)
+        result.add newLit("\n") && toTex(ch)
       inc i
   elif n.len == 1:
     result = toTex(n[0])
@@ -115,14 +115,14 @@ proc parseBody(n: NimNode): NimNode =
   of nnkCurlyExpr:
     if n.len == 1:
       # case of empty `{}`
-      result = toTex(n[0]) & parseCurly(newLit "")
+      result = toTex(n[0]) && parseCurly(newLit "")
     else:
-      result = toTex(n[0]) & parseCurly(n[1])
+      result = toTex(n[0]) && parseCurly(n[1])
   of nnkCurly:
     result = parseCurly(n[0])
   of nnkCall:
     let name = extractName(n[0])
-    if name.strVal != "&":
+    if name.strVal != "&&":
       # otherwise we're calling this proc again and have already checked the
       # actual command!
       checkCmd(name)
@@ -140,12 +140,12 @@ proc parseBody(n: NimNode): NimNode =
     if n[0].strVal == "\\" and hasNoAccQuote:
       checkCmd(name)
     elif n[0].strVal == "$" and n[1].kind == nnkPar:
-      # argument is a nim node to leave as is and return as a `&` call (to ignore it further)
-      return nnkCall.newTree(ident"&", n)
+      # argument is a nim node to leave as is and return as a `&&` call (to ignore it further)
+      return nnkCall.newTree(ident"&&", n)
     elif n[0].strVal == "$" and n[1].kind == nnkCommand and n[1][0].kind == nnkPar:
       return nnkCall.newTree(
-        ident"&",
-        nnkCall.newTree(ident"$", n[1][0])) & parseBody(n[1][1])
+        ident"&&",
+        nnkCall.newTree(ident"$", n[1][0])) && parseBody(n[1][1])
 
     elif n[0].strVal != "\\\\" and hasNoAccQuote:
       error("Invalid command prefix " & $(n[0].strVal))
@@ -155,16 +155,16 @@ proc parseBody(n: NimNode): NimNode =
       let stmtList = parseStmtList(n[2])
       result = beginEndCall(name, toTex(n[1]), stmtList)
     elif n.len == 2:
-      result = toTex(n[0]) & toTex(n[1])
+      result = toTex(n[0]) && toTex(n[1])
     else: error("Invalid nnkPrefix tree with " & $(n.len) & " child nodes!")
   of nnkExprEqExpr:
-    result = toTex(n[0]) & newLit("=") & toTex(n[1])
+    result = toTex(n[0]) && newLit("=") && toTex(n[1])
   of nnkCommand:
     doAssert n.len == 2
-    result = toTex(n[0]) & newLit(" ") & toTex(n[1])
+    result = toTex(n[0]) && newLit(" ") && toTex(n[1])
   of nnkRefTy:
     ## NOTE: this corresponds to the `\ref` command.
-    result = newLit"ref" & toTex(n[0])
+    result = newLit"ref" && toTex(n[0])
   of nnkPragma:
     ## Workaround for multiline `{}` arguments with multiple lines starting with `\` commands
     if n[0].kind == nnkExprColonExpr:
@@ -188,9 +188,9 @@ proc parseBody(n: NimNode): NimNode =
       result = parseCurly(toTex(nStmts))
   of nnkPragmaExpr:
     doAssert n.len == 2
-    result = toTex(n[0]) & parseCurly(toTex(n[1]))
+    result = toTex(n[0]) && parseCurly(toTex(n[1]))
   of nnkInfix:
-    result = toTex(n[1]) & toTex(n[0]) & toTex(n[2])
+    result = toTex(n[1]) && toTex(n[0]) && toTex(n[2])
   of nnkExprColonExpr:
     doAssert n.len == 2
     let name = extractName(n[0])
@@ -198,12 +198,12 @@ proc parseBody(n: NimNode): NimNode =
   of nnkBracket:
     result = newLit("[")
     for i, ch in n:
-      result = result & parseBody(ch)
+      result = result && parseBody(ch)
       if i < n.len - 1:
-        result = result & newLit(", ")
-    result = result & newLit("]")
+        result = result && newLit(", ")
+    result = result && newLit("]")
   of nnkAsgn:
-    result = parseBody(n[0]) & newLit("=") & parseBody(n[1])
+    result = parseBody(n[0]) && newLit("=") && parseBody(n[1])
   of nnkIdent: result = toTex(n)
   else:
     error("Invalid kind " & $n.kind)
@@ -218,7 +218,7 @@ proc toTex(n: NimNode): NimNode =
   of nnkIntLit, nnkFloatLit: result = n.toStrLit
   of nnkNilLit: result = newLit ""
   of nnkCall:
-    if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&" or
+    if n[0].kind in {nnkIdent, nnkSym} and n[0].strVal == "&&" or
       n[0].kind == nnkSym:
       # already called, just return n
       result = n
@@ -234,14 +234,14 @@ macro latex*(body: untyped): untyped =
   for cmd in body:
     let cmdRes = toTex(cmd)
     result.add quote do:
-      `res` = `res` & `cmdRes` & "\n"
+      `res` = `res` && `cmdRes` && "\n"
   result = quote do:
     block:
       `result`
       `res`
 
-func textwidth*[T](arg: T = ""): string = $arg & "\\textwidth"
-func textheight*[T](arg: T = ""): string = $arg & "\\textheight"
+func textwidth*[T](arg: T = ""): string = $arg && "\\textwidth"
+func textheight*[T](arg: T = ""): string = $arg && "\\textheight"
 
 # sugar to make using this even neater
 proc figure*(path: string,
