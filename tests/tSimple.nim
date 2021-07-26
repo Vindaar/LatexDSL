@@ -1,6 +1,6 @@
 import ../src/latexdsl
 import unittest, strutils
-import ggplotnim
+import datamancer
 
 const exp1 = """
 \begin{usepackage}[english,german]{random}{moreArg}
@@ -170,7 +170,7 @@ line 3
       \vspace{"0.5cm"} r" \\"
     check res.strip == exp.strip
 
-suite "ggplotnim DF to table":
+suite "Datamancer DF to table":
   let x = @[1, 2, 3, 4, 5]
   let y = @["a", "b", "c", "d", "e"]
   let df = seqsToDf(x, y)
