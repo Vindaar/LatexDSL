@@ -244,7 +244,7 @@ func textwidth*[T](arg: T = ""): string = $arg & "\\textwidth"
 func textheight*[T](arg: T = ""): string = $arg & "\\textheight"
 
 # sugar to make using this even neater
-func figure*(path: string,
+proc figure*(path: string,
              caption = "",
              width = "",
              height = "",
