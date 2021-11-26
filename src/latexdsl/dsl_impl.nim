@@ -219,4 +219,4 @@ macro latex*(body: untyped): untyped =
     block:
       `result`
       `res`
-  echo result.repr
+  #echo result.repr
