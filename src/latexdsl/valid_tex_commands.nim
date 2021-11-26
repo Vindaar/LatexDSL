@@ -89,4 +89,4 @@ type
     vline, vo, vspace, vspacelen, wedge, widehatarg, widetildearg, wp, wr, xi,
     year, zeta, zzz, `|`, `~`, `~o`, `‘`, `‘o`, `’`, `’.`, `’o`,
     draw, node, definecolor, fontsize, rotatebox, path, mycolorbar,
-    pgfpathmoveto, pgfpointxy, pgfusepath, tikzpicture
+    pgfpathmoveto, pgfpointxy, pgfusepath, tikzpicture, align, aligned
