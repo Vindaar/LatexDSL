@@ -1,3 +1,9 @@
+* v0.1.6
+- refactor code to split helpers and DSL
+- drop support for Nim 1.4, as the concepts for the helpers break the
+  compiler, due to the TeX command enum having characters that are
+  binary operators (fixed in 1.6, so I'm not going to work around that
+  for old Nim, sorry)
 * v0.1.5
 - set up docs
 - set up CI via Github Actions
