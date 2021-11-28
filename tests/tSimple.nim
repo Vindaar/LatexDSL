@@ -177,70 +177,70 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 6, 0):
     let df = seqsToDf(x, y)
     test "DF to table, no caption or label":
       let noCptNoLab = """
-  \begin{table}[htbp]
-  \centering
+\begin{table}[htbp]
+\centering
 
-  \begin{tabular}{l l}
-  \toprule
-  x & y\\
-  \midrule
-  1 & a\\
-  2 & b\\
-  3 & c\\
-  4 & d\\
-  5 & e
-  \bottomrule
-  \end{tabular}
+\begin{tabular}{l l}
+\toprule
+x & y\\
+\midrule
+1 & a\\
+2 & b\\
+3 & c\\
+4 & d\\
+5 & e
+\bottomrule
+\end{tabular}
 
 
-  \end{table}
-  """
+\end{table}
+"""
       check toTexTable(df).strip == noCptNoLab.strip
 
     test "DF to table, no label":
       let noCpt = """
-  \begin{table}[htbp]
-  \centering
+\begin{table}[htbp]
+\centering
 
-  \begin{tabular}{l l}
-  \toprule
-  x & y\\
-  \midrule
-  1 & a\\
-  2 & b\\
-  3 & c\\
-  4 & d\\
-  5 & e
-  \bottomrule
-  \end{tabular}
+\begin{tabular}{l l}
+\toprule
+x & y\\
+\midrule
+1 & a\\
+2 & b\\
+3 & c\\
+4 & d\\
+5 & e
+\bottomrule
+\end{tabular}
 
-  \caption{test caption}
+\caption{test caption}
 
-  \end{table}
-  """
+\end{table}
+"""
       check toTexTable(df, caption = "test caption").strip == noCpt.strip
 
     test "DF to table, both label and caption":
       let both = """
-  \begin{table}[htbp]
-  \centering
+\begin{table}[htbp]
+\centering
 
-  \begin{tabular}{l l}
-  \toprule
-  x & y\\
-  \midrule
-  1 & a\\
-  2 & b\\
-  3 & c\\
-  4 & d\\
-  5 & e
-  \bottomrule
-  \end{tabular}
+\begin{tabular}{l l}
+\toprule
+x & y\\
+\midrule
+1 & a\\
+2 & b\\
+3 & c\\
+4 & d\\
+5 & e
+\bottomrule
+\end{tabular}
 
-  \caption{test caption}
-  \label{testLabel}
+\caption{test caption}
+\label{testLabel}
 
-  \end{table}
-  """
+\end{table}
+"""
       check toTexTable(df, caption = "test caption",
                        label = "testLabel").strip == both.strip
