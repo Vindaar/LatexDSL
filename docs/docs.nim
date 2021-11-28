@@ -15,7 +15,6 @@ This file is a slightly modified version of the same file of `nimterop`:
 https://github.com/nimterop/nimterop/blob/master/nimterop/docs.nim
 ]#
 
-
 proc getNimRootDir(): string =
   #[
   hack, but works
@@ -24,7 +23,7 @@ proc getNimRootDir(): string =
   import "$nim/testament/lib/stdtest/specialpaths.nim"
   nimRootDir
   ]#
-  fmt"{currentSourcePath}".parentDir.parentDir.parentDir
+  getCurrentCompilerExe().parentDir.parentDir
 
 const
   DirSep = when defined(windows): '\\' else: '/'
