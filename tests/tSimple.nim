@@ -170,7 +170,7 @@ line 3
       \vspace{"0.5cm"} r" \\"
     check res.strip == exp.strip
 
-when (NimMajor, NimMinor, NimPath) >= (1, 6, 0):
+when (NimMajor, NimMinor, NimPatch) >= (1, 6, 0):
   suite "Datamancer DF to table":
     let x = @[1, 2, 3, 4, 5]
     let y = @["a", "b", "c", "d", "e"]
