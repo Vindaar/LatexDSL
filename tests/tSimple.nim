@@ -170,76 +170,77 @@ line 3
       \vspace{"0.5cm"} r" \\"
     check res.strip == exp.strip
 
-suite "Datamancer DF to table":
-  let x = @[1, 2, 3, 4, 5]
-  let y = @["a", "b", "c", "d", "e"]
-  let df = seqsToDf(x, y)
-  test "DF to table, no caption or label":
-    let noCptNoLab = """
-\begin{table}[htbp]
-\centering
+when (NimMajor, NimMinor, NimPath) >= (1, 6, 0):
+  suite "Datamancer DF to table":
+    let x = @[1, 2, 3, 4, 5]
+    let y = @["a", "b", "c", "d", "e"]
+    let df = seqsToDf(x, y)
+    test "DF to table, no caption or label":
+      let noCptNoLab = """
+  \begin{table}[htbp]
+  \centering
 
-\begin{tabular}{l l}
-\toprule
-x & y\\
-\midrule
-1 & a\\
-2 & b\\
-3 & c\\
-4 & d\\
-5 & e
-\bottomrule
-\end{tabular}
+  \begin{tabular}{l l}
+  \toprule
+  x & y\\
+  \midrule
+  1 & a\\
+  2 & b\\
+  3 & c\\
+  4 & d\\
+  5 & e
+  \bottomrule
+  \end{tabular}
 
 
-\end{table}
-"""
-    check toTexTable(df).strip == noCptNoLab.strip
+  \end{table}
+  """
+      check toTexTable(df).strip == noCptNoLab.strip
 
-  test "DF to table, no label":
-    let noCpt = """
-\begin{table}[htbp]
-\centering
+    test "DF to table, no label":
+      let noCpt = """
+  \begin{table}[htbp]
+  \centering
 
-\begin{tabular}{l l}
-\toprule
-x & y\\
-\midrule
-1 & a\\
-2 & b\\
-3 & c\\
-4 & d\\
-5 & e
-\bottomrule
-\end{tabular}
+  \begin{tabular}{l l}
+  \toprule
+  x & y\\
+  \midrule
+  1 & a\\
+  2 & b\\
+  3 & c\\
+  4 & d\\
+  5 & e
+  \bottomrule
+  \end{tabular}
 
-\caption{test caption}
+  \caption{test caption}
 
-\end{table}
-"""
-    check toTexTable(df, caption = "test caption").strip == noCpt.strip
+  \end{table}
+  """
+      check toTexTable(df, caption = "test caption").strip == noCpt.strip
 
-  test "DF to table, both label and caption":
-    let both = """
-\begin{table}[htbp]
-\centering
+    test "DF to table, both label and caption":
+      let both = """
+  \begin{table}[htbp]
+  \centering
 
-\begin{tabular}{l l}
-\toprule
-x & y\\
-\midrule
-1 & a\\
-2 & b\\
-3 & c\\
-4 & d\\
-5 & e
-\bottomrule
-\end{tabular}
+  \begin{tabular}{l l}
+  \toprule
+  x & y\\
+  \midrule
+  1 & a\\
+  2 & b\\
+  3 & c\\
+  4 & d\\
+  5 & e
+  \bottomrule
+  \end{tabular}
 
-\caption{test caption}
-\label{testLabel}
+  \caption{test caption}
+  \label{testLabel}
 
-\end{table}
-"""
-    check toTexTable(df, caption = "test caption",
-                     label = "testLabel").strip == both.strip
+  \end{table}
+  """
+      check toTexTable(df, caption = "test caption",
+                       label = "testLabel").strip == both.strip
