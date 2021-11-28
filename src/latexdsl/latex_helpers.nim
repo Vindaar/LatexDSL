@@ -78,7 +78,7 @@ func tableRow*(s: varargs[string]): string =
       result.add " & " & el
   result.add " \\\\\n"
 
-when (NimMajor, NimMinor, NimPatch) > (1, 4, 0):
+when (NimMajor, NimMinor, NimPatch) >= (1, 6, 0):
   proc toTexTable*(df: DataFrameLike,
                    caption = "",
                    label = "",
