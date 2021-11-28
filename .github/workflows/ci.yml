@@ -55,6 +55,7 @@ jobs:
         run: |
           cd latexdsl
           nimble -y test
+          which nim
 
       - name: Build docs
         if: >
