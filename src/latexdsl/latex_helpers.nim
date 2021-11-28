@@ -78,70 +78,71 @@ func tableRow*(s: varargs[string]): string =
       result.add " & " & el
   result.add " \\\\\n"
 
-proc toTexTable*(df: DataFrameLike,
-                 caption = "",
-                 label = "",
-                 alignment = "left",
-                 location = "htbp"): string =
-  ## Turns a DataFrame into a TeX table.
-  ## If `alignment` it overrides the `tabular` alignment argument (e.g. `l l l`)
-  ## It's possible to set the alignment via:
-  ## - left, right, center
-  ##   then the number of columns is determined from the data frame, but they are
-  ##   all aligned accordingly.
-  ## - hand a valid TeX string for alignment
-  let keys = df.getKeys()
-  let header = keys.join(" & ") & "\\\\"
-  var rows: string
-  for i in 0 ..< df.len:
-    var row = ""
-    let dfRow = df.row(i)
-    for j, k in keys:
-      if j == 0:
-        row.add $dfRow[k]
+when (NimMajor, NimMinor, NimPatch) > (1, 4, 0):
+  proc toTexTable*(df: DataFrameLike,
+                   caption = "",
+                   label = "",
+                   alignment = "left",
+                   location = "htbp"): string =
+    ## Turns a DataFrame into a TeX table.
+    ## If `alignment` it overrides the `tabular` alignment argument (e.g. `l l l`)
+    ## It's possible to set the alignment via:
+    ## - left, right, center
+    ##   then the number of columns is determined from the data frame, but they are
+    ##   all aligned accordingly.
+    ## - hand a valid TeX string for alignment
+    let keys = df.getKeys()
+    let header = keys.join(" & ") & "\\\\"
+    var rows: string
+    for i in 0 ..< df.len:
+      var row = ""
+      let dfRow = df.row(i)
+      for j, k in keys:
+        if j == 0:
+          row.add $dfRow[k]
+        else:
+          row.add " & " & $dfRow[k]
+      if i < df.len - 1:
+        rows.add row & "\\\\\n"
       else:
-        row.add " & " & $dfRow[k]
-    if i < df.len - 1:
-      rows.add row & "\\\\\n"
-    else:
-      rows.add row
+        rows.add row
 
-  let align = block:
-    var align = ""
-    var akKind = parseEnum[AlignmentKind](alignment, akNone)
-    if akKind == akNone and alignment.len > 0:
-      # use user given alignment
-      align = alignment
-      doAssert align.strip.split(Whitespace).len == keys.len, "Given user alignment does not " &
-        "assign all columns of the DataFrame! Alignment: " & $alignment & " for DataFrame with" &
-        $keys.len & " columns."
-    else:
-      # determine the alignment based on the number of columns
-      akKind = if akKind == akNone: akLeft else: akKind
-      align = toSeq(0 ..< keys.len).mapIt(toStr(akKind)).join(" ")
-    align
+    let align = block:
+      var align = ""
+      var akKind = parseEnum[AlignmentKind](alignment, akNone)
+      if akKind == akNone and alignment.len > 0:
+        # use user given alignment
+        align = alignment
+        doAssert align.strip.split(Whitespace).len == keys.len, "Given user alignment does not " &
+          "assign all columns of the DataFrame! Alignment: " & $alignment & " for DataFrame with" &
+          $keys.len & " columns."
+      else:
+        # determine the alignment based on the number of columns
+        akKind = if akKind == akNone: akLeft else: akKind
+        align = toSeq(0 ..< keys.len).mapIt(toStr(akKind)).join(" ")
+      align
 
-  # construct only the table body without possible label, caption
-  var mainBody = latex:
-    \centering
-    \tabular{`align`}:
-      \toprule
-      `header`
-      \midrule
-      `rows`
-      \bottomrule
+    # construct only the table body without possible label, caption
+    var mainBody = latex:
+      \centering
+      \tabular{`align`}:
+        \toprule
+        `header`
+        \midrule
+        `rows`
+        \bottomrule
 
-  if caption.len > 0:
-    ## NOTE: if we try to do `mainBody.add` we run into some bizarre issue
-    ## where it complains about `{}` being an undeclared identifier. What's the
-    ## problem here?
-    let tmp = latex:
-      \caption{`caption`}
-    mainBody.add tmp
-  if label.len > 0:
-    let tmp = latex:
-      \label{`label`}
-    mainBody.add tmp
-  result = latex:
-    \table[`location`]:
-      `mainBody`
+    if caption.len > 0:
+      ## NOTE: if we try to do `mainBody.add` we run into some bizarre issue
+      ## where it complains about `{}` being an undeclared identifier. What's the
+      ## problem here?
+      let tmp = latex:
+        \caption{`caption`}
+      mainBody.add tmp
+    if label.len > 0:
+      let tmp = latex:
+        \label{`label`}
+      mainBody.add tmp
+    result = latex:
+      \table[`location`]:
+        `mainBody`

@@ -182,6 +182,9 @@ Num & Group\\
 \end{table}
 #+end_src
 
+*NOTE*: The Dataframe helper functionality is only available on Nim
+versions starting from v1.6!
+
 ** Caveats
 
 Of course not every possible LaTeX code can be represented as valid
