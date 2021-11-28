@@ -1,3 +1,6 @@
+* v0.1.7
+- add support for Nim v1.4 again, only =toTexTable= is exempt, which
+  allows dependencies to support 1.4
 * v0.1.6
 - refactor code to split helpers and DSL
 - drop support for Nim 1.4, as the concepts for the helpers break the
