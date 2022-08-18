@@ -1,3 +1,6 @@
+* v0.1.10
+- make sure =compile= can be used in a =static= context
+  (Note to self: =shell= only works in NimScript, but not in =nimvm=...)
 * v0.1.9
 - add =mathrm= as valid TeX command
 - handle int and float literals correctly

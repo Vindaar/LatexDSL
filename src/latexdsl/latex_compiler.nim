@@ -21,9 +21,12 @@ proc getStandaloneTmpl(): string =
 
 proc writeTeXFile*(fname, body: string) =
   let tmpl = getStandaloneTmpl()
-  var f = open(fname, fmWrite)
-  f.write(tmpl % body)
-  f.close()
+  when nimvm:
+    writeFile(fname, tmpl % body)
+  else:
+    var f = open(fname, fmWrite)
+    f.write(tmpl % body)
+    f.close()
 
 proc compile*(fname, body: string) =
   # 1. write the file
@@ -42,11 +45,20 @@ proc compile*(fname, body: string) =
 
   var generated = false
   template checkAndRun(cmd: untyped): untyped =
-    var (res, err) = shellVerbose:
-      ($checkCmd) ($cmd)
-    if err == 0:
+    var
+      res: string
+      err: int
+    when nimvm:
+      (res, err) = gorgeEx(@[checkCmd, cmd].join(" "))
+    else:
       (res, err) = shellVerbose:
-        ($cmd) "-output-directory" ($path) ($fname)
+        ($checkCmd) ($cmd)
+    if err == 0:
+      when nimvm:
+        (res, err) = gorgeEx(@[$cmd, "-output-directory", $path, $fname].join(" "))
+      else:
+        (res, err) = shellVerbose:
+          ($cmd) "-output-directory" ($path) ($fname)
       if err == 0:
         # successfully generated
         generated = true
