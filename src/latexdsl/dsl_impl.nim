@@ -30,8 +30,14 @@ proc isTexCommand(n: NimNode): bool =
     result = val != INVALID_CMD
 
 template checkCmd(arg: NimNode): untyped =
-  if not isTexCommand(arg):
-    error("Invalid tex command: " && $(arg.strVal))
+  var cmd = arg
+  if "_" in arg.strVal:
+    # split by "_" and try each
+    let sp = arg.strVal.split("_")
+    doAssert sp.len == 2, "Multiple `_` not allowed!"
+    cmd = ident(sp[0])
+  if not isTexCommand(cmd):
+    error("Invalid tex command: " && $(cmd.strVal))
 
 template `\`(n: untyped): string = "\\" && $n
 
