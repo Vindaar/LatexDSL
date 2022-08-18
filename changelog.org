@@ -1,3 +1,14 @@
+* v0.1.8
+- add missing =frac= as valid TeX command
+- add =latexdsl_nochecks= module that can be imported to deactivate CT
+  checks. This is useful if you have static code that uses latexdsl
+  and wants to avoid the expensive CT penalty of generating the enum
+  for the allowed commands on each compilation.
+- add =latex_compiler= submodule that allows to directly compile a
+  latex snippet as a standalone and produce a PDF from it
+- add =math= scope that can be used to auto wrap a body in a math
+  environment. The delimiter is =$= by default but can be changed at
+  CT (using a =static= block) using the =MathDelim= variable.
 * v0.1.7
 - add support for Nim v1.4 again, only =toTexTable= is exempt, which
   allows dependencies to support 1.4

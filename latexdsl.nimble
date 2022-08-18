@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.7"
+version       = "0.1.8"
 author        = "Vindaar"
 description   = "A DSL to write LaTeX in Nim. No idea who wants that."
 license       = "MIT"
