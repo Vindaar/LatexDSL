@@ -1,3 +1,6 @@
+* v0.1.9
+- add =mathrm= as valid TeX command
+- handle int and float literals correctly  
 * v0.1.8
 - add missing =frac= as valid TeX command
 - add =latexdsl_nochecks= module that can be imported to deactivate CT

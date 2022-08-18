@@ -198,6 +198,7 @@ proc parseBody(n: NimNode): NimNode =
   of nnkAsgn:
     result = parseBody(n[0]) && newLit("=") && parseBody(n[1])
   of nnkIdent: result = toTex(n)
+  of nnkIntLit, nnkFloatLit: result = toTex(n)
   else:
     error("Invalid kind " & $n.kind)
 
