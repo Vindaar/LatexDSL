@@ -1,6 +1,12 @@
 import macros, strutils, strformat, sequtils
 
-import valid_tex_commands
+import macrocache
+const NoCommandChecks = CacheCounter"CommandCounterCheck"
+when NoCommandChecks.value > 0:
+  import valid_tex_commands_dummy
+else:
+  import valid_tex_commands
+
 var MathDelim* {.compileTime.} = "$"
 
 proc `&&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&&", n, m)
@@ -14,11 +20,14 @@ proc `&&`*(s: varargs[string]): string =
 
 proc isTexCommand(n: NimNode): bool =
   ## compile time check whether the given is a valid TeX command
-  let nStr = n.strVal
-  var val = INVALID_CMD
-  if nStr.len > 0:
-    val = parseEnum[LatexCommands](nStr, INVALID_CMD)
-  result = val != INVALID_CMD
+  when NoCommandChecks.value > 0:
+    result = true
+  else:
+    let nStr = n.strVal
+    var val = INVALID_CMD
+    if nStr.len > 0:
+      val = parseEnum[LatexCommands](nStr, INVALID_CMD)
+    result = val != INVALID_CMD
 
 template checkCmd(arg: NimNode): untyped =
   if not isTexCommand(arg):
