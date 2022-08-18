@@ -1,6 +1,7 @@
 import macros, strutils, strformat, sequtils
 
 import valid_tex_commands
+var MathDelim* {.compileTime.} = "$"
 
 proc `&&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&&", n, m)
 
@@ -35,9 +36,12 @@ proc makeArg*(arg: string): string =
 
 proc makeBeginEnd*(name, header, body: string): string =
   let headerNoName = multiReplace(header, [(name, "")])
-  result = "\n\\begin{" & $name & "}" & $headerNoName & "\n"
-  result.add body & "\n"
-  result.add "\\end{" & $name & "}\n"
+  if name == "math":
+    result = MathDelim & $body & MathDelim
+  else:
+    result = "\n\\begin{" & $name & "}" & $headerNoName & "\n"
+    result.add body & "\n"
+    result.add "\\end{" & $name & "}\n"
 
 proc toTex(n: NimNode): NimNode
 proc parseBracket(n: NimNode): NimNode =
