@@ -1,3 +1,12 @@
+* v0.1.11
+- make sure =math= can be used inside of a template, by adding a
+  =unsym= stage before actually entering the DSL logic. We use a check
+  for nim symbols in the logic to avoid infinite recursions, so
+  receiving a symbol from the input causes things to break
+- =MathDelim= can be set more easily in a =static= context now
+- remove dependency on datamancer (only for tests)
+- add dependency for =shell= (for latex compilation)
+- add more tests        
 * v0.1.10
 - make sure =compile= can be used in a =static= context
   (Note to self: =shell= only works in NimScript, but not in =nimvm=...)
