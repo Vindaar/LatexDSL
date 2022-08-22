@@ -10,6 +10,7 @@ srcDir        = "src"
 
 requires "nim >= 1.4.0"
 requires "datamancer"
+requires "shell"
 
 import os, strutils, strformat
 template canImport(x: untyped): untyped =
