@@ -1,0 +1,12 @@
+ValueLike	latex_helpers.html#ValueLike	latex_helpers: ValueLike	
+DataFrameLike	latex_helpers.html#DataFrameLike	latex_helpers: DataFrameLike	
+akNone	latex_helpers.html#akNone	AlignmentKind.akNone	
+akLeft	latex_helpers.html#akLeft	AlignmentKind.akLeft	
+akRight	latex_helpers.html#akRight	AlignmentKind.akRight	
+akCenter	latex_helpers.html#akCenter	AlignmentKind.akCenter	
+AlignmentKind	latex_helpers.html#AlignmentKind	latex_helpers: AlignmentKind	
+textwidth	latex_helpers.html#textwidth,T	latex_helpers: textwidth[T](arg: T = &quot;&quot;): string	
+textheight	latex_helpers.html#textheight,T	latex_helpers: textheight[T](arg: T = &quot;&quot;): string	
+figure	latex_helpers.html#figure,string,string,string,string,string,string	latex_helpers: figure(path: string; caption = &quot;&quot;; width = &quot;&quot;; height = &quot;&quot;; location = &quot;htbp&quot;;\n       label = &quot;&quot;; checkFile = false): string	
+tableRow	latex_helpers.html#tableRow,varargs[string]	latex_helpers: tableRow(s: varargs[string]): string	
+toTexTable	latex_helpers.html#toTexTable,DataFrameLike,string,string,string,string	latex_helpers: toTexTable(df: DataFrameLike; caption = &quot;&quot;; label = &quot;&quot;; alignment = &quot;left&quot;;\n           location = &quot;htbp&quot;): string	

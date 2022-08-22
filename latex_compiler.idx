@@ -1,0 +1,2 @@
+writeTeXFile	latex_compiler.html#writeTeXFile,string,string	latex_compiler: writeTeXFile(fname, body: string)	
+compile	latex_compiler.html#compile,string,string	latex_compiler: compile(fname, body: string)	

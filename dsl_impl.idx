@@ -1,0 +1,6 @@
+MathDelim	dsl_impl.html#MathDelim	dsl_impl: MathDelim	
+`&amp;&amp;`	dsl_impl.html#&&,varargs[string]	dsl_impl: `&amp;&amp;`(s: varargs[string]): string	
+makeOpts	dsl_impl.html#makeOpts,string,varargs[string]	dsl_impl: makeOpts(name: string; args: varargs[string]): string	
+makeArg	dsl_impl.html#makeArg,string	dsl_impl: makeArg(arg: string): string	
+makeBeginEnd	dsl_impl.html#makeBeginEnd,string,string,string	dsl_impl: makeBeginEnd(name, header, body: string): string	
+latex	dsl_impl.html#latex.m,untyped	dsl_impl: latex(body: untyped): untyped	
