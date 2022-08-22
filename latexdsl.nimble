@@ -9,7 +9,6 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.4.0"
-requires "datamancer"
 requires "shell"
 
 import os, strutils, strformat
@@ -29,3 +28,10 @@ when canImport(docs / docs):
       "src/", "docs/",
       defaultFlags = "--hints:off --warnings:off"
     )
+
+task test, "Run the tests":
+  exec "nim r tests/tSimple.nim"
+  exec "nim r tests/tMathDelim.nim"
+
+task testDeps, "Installs dependencies for tests":
+  exec "nimble install -y datamancer"
