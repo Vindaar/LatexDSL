@@ -51,8 +51,9 @@ proc makeArg*(arg: string): string =
 
 proc makeBeginEnd*(name, header, body: string): string =
   let headerNoName = multiReplace(header, [(name, "")])
+  const delim = MathDelim # get the *current* math delimiter
   if name == "math":
-    result = MathDelim & $body & MathDelim
+    result = delim & $body & delim
   else:
     result = "\n\\begin{" & $name & "}" & $headerNoName & "\n"
     result.add body & "\n"
