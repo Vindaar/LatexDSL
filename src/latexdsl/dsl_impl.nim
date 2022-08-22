@@ -226,13 +226,28 @@ proc toTex(n: NimNode): NimNode =
       result = parseBody(n)
   else: result = parseBody(n)
 
+proc unsym(n: NimNode): NimNode =
+  ## *Very* simple "unsym" procedure, replacing all symbols by idents.
+  ## Used in the first step before entering the actual latex DSL logic,
+  ## to make sure every symbol is an ident, as we have symbol based
+  ## logic to detect if we enter a recursive loop.
+  case n.kind
+  of nnkSym: result = ident(n.strVal)
+  else:
+    if n.len > 0:
+      result = newTree(n.kind)
+      for ch in n:
+        result.add ch.unsym()
+    else:
+      result = n
+
 macro latex*(body: untyped): untyped =
   let res = genSym(nskVar, "res")
   result = newStmtList()
   result.add quote do:
     var `res`: string
   for cmd in body:
-    let cmdRes = toTex(cmd)
+    let cmdRes = toTex(cmd.unsym)
     result.add quote do:
       `res` = `res` && `cmdRes` && "\n"
   result = quote do:
