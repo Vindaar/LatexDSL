@@ -170,6 +170,31 @@ line 3
       \vspace{"0.5cm"} r" \\"
     check res.strip == exp.strip
 
+  test "`math` helper generates math delimited code":
+    let b = latex:
+      math:
+        e^{\pi i} = -1
+    check $b.strip == r"$e^{\pi i}=-1$"
+
+  test "`latex` can be used in CT context":
+    const b = latex:
+      math:
+        e^{\pi i} = -1
+    static:
+      echo $b
+      doAssert $b.strip == r"$e^{\pi i}=-1$", " was ? " & $b
+
+  test "`latex` can be used inside a template (unsym)":
+    template nbMath(body: untyped): untyped =
+      let s = latex:
+        math:
+          body
+      s
+
+    let b = nbMath:
+      e^{\pi i} = -1
+    check $b.strip == r"$e^{\pi i}=-1$"
+
 when (NimMajor, NimMinor, NimPatch) >= (1, 6, 0):
   suite "Datamancer DF to table":
     let x = @[1, 2, 3, 4, 5]
