@@ -1,3 +1,5 @@
+* v0.1.12
+- allow handing a custom template to ~compile~
 * v0.1.11
 - make sure =math= can be used inside of a template, by adding a
   =unsym= stage before actually entering the DSL logic. We use a check
