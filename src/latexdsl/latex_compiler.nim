@@ -19,8 +19,8 @@ proc getStandaloneTmpl(): string =
     document:
       "$#"
 
-proc writeTeXFile*(fname, body: string) =
-  let tmpl = getStandaloneTmpl()
+proc writeTeXFile*(fname, body: string,
+                   tmpl = getStandaloneTmpl()) =
   when nimvm:
     writeFile(fname, tmpl % body)
   else:
@@ -28,9 +28,9 @@ proc writeTeXFile*(fname, body: string) =
     f.write(tmpl % body)
     f.close()
 
-proc compile*(fname, body: string) =
+proc compile*(fname, body: string, tmpl = getStandaloneTmpl()) =
   # 1. write the file
-  writeTexFile(fname, body)
+  writeTexFile(fname, body, tmpl)
 
   # get path
   let path = fname.parentDir
