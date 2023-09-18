@@ -52,7 +52,10 @@ proc makeArg*(arg: string): string =
 
 proc makeBeginEnd*(name, header, body: string): string =
   let headerNoName = multiReplace(header, [(name, "")])
-  let delim = MathDelim
+  when (NimMajor, NimMinor, NimPatch) > (1, 7, 0):
+    let delim = MathDelim
+  else:
+    const delim = MathDelim
   if name == "math":
     result = delim & $body & delim
   else:
