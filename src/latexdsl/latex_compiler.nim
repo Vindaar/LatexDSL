@@ -20,20 +20,23 @@ proc getStandaloneTmpl(): string =
       "$#"
 
 proc writeTeXFile*(fname, body: string,
-                   tmpl = getStandaloneTmpl()) =
+                   fullBody = false) =
+  let tmpl = if fullBody: body else: getStandaloneTmpl() % body
   when nimvm:
-    writeFile(fname, tmpl % body)
+    writeFile(fname, tmpl)
   else:
     var f = open(fname, fmWrite)
-    f.write(tmpl % body)
+    f.write(tmpl)
     f.close()
 
-proc compile*(fname, body: string, tmpl = getStandaloneTmpl()) =
+proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
+              path = "", fullBody = false, verbose = true) =
   # 1. write the file
-  writeTexFile(fname, body, tmpl)
+  writeTexFile(fname, body, fullBody)
+
 
   # get path
-  let path = fname.parentDir
+  let path = if path.len > 0: path else: fname.parentDir
 
   # 2. compile
   when defined(linux) or defined(macosx):
@@ -45,6 +48,9 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl()) =
 
   var generated = false
   template checkAndRun(cmd: untyped): untyped =
+    var cfg = { dokCommand, dokError, dokOutput, dokRuntime }
+    if verbose:
+      cfg.excl dokOutput
     var
       res: string
       err: int
@@ -62,10 +68,11 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl()) =
       if err == 0:
         # successfully generated
         generated = true
+        if not verbose: # only print in this case, otherwise the TeX output shows something similar
+          echo "Generated: ", fname.replace(".tex", ".pdf")
       else:
         raise newException(IOError, "Could not generate PDF from TeX file `" & $fname &
-          & "` using TeX compiler: `" & $cmd & "`. Output was: " &
-          res)
+          & "` using TeX compiler: `" & $cmd & "`. Output was: " & res)
   checkAndRun("xelatex")
   if generated: return # success, no need to try `lualatex`
   ## NOTE: lualatex is 2nd as it's a slower compiler than xelatex
