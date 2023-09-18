@@ -19,9 +19,9 @@ proc getStandaloneTmpl(): string =
     document:
       "$#"
 
-proc writeTeXFile*(fname, body: string,
+proc writeTeXFile*(fname, body, tmpl: string,
                    fullBody = false) =
-  let tmpl = if fullBody: body else: getStandaloneTmpl() % body
+  let tmpl = if fullBody: body else: tmpl % body
   when nimvm:
     writeFile(fname, tmpl)
   else:
@@ -31,9 +31,19 @@ proc writeTeXFile*(fname, body: string,
 
 proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
               path = "", fullBody = false, verbose = true) =
-  # 1. write the file
-  writeTexFile(fname, body, fullBody)
+  ## Writes and compiles the file `fname` with contents `body`. If no explicit
+  ## template is given a default template including a few common packages are
+  ## included and your `body` is inserted into the `document` part. You can
+  ## hand either a custom template, which requires a `$#` field where the body
+  ## will be inserted. Or hand an entire TeX file and set `fullBody = true`.
+  ##
+  ## If `verbose` is `true`, the TeX compilation output will be printed.
+  if fname.endsWith(".pdf"):
+    echo "[WARNING] Given filename `", fname, "` ends with .pdf. This means we overwrite the temporary ",
+     ".tex file that is created!"
 
+  # 1. write the file
+  writeTexFile(fname, body, tmpl, fullBody)
 
   # get path
   let path = if path.len > 0: path else: fname.parentDir
