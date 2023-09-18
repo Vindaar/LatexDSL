@@ -7,6 +7,7 @@ when NoCommandChecks.value > 0:
 else:
   import valid_tex_commands
 
+## Decides the math delimiter to use
 var MathDelim* {.compileTime.} = "$"
 
 proc `&&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&&", n, m)
@@ -51,7 +52,7 @@ proc makeArg*(arg: string): string =
 
 proc makeBeginEnd*(name, header, body: string): string =
   let headerNoName = multiReplace(header, [(name, "")])
-  const delim = MathDelim # get the *current* math delimiter
+  let delim = MathDelim
   if name == "math":
     result = delim & $body & delim
   else:
