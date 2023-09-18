@@ -204,8 +204,16 @@ proc parseBody(n: NimNode): NimNode =
     result = result && newLit("]")
   of nnkAsgn:
     result = parseBody(n[0]) && newLit("=") && parseBody(n[1])
+  of nnkTupleConstr:
+    result = newLit("(")
+    for i, ch in n:
+      result = result && parseBody(ch)
+      if i < n.len - 1:
+        result = result && newLit(", ")
+    result = result && newLit(")")
   of nnkIdent: result = toTex(n)
   of nnkIntLit, nnkFloatLit: result = toTex(n)
+  of nnkAccQuoted: result = toTex(n)
   else:
     error("Invalid kind " & $n.kind)
 
