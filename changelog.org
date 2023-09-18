@@ -1,3 +1,12 @@
+* v0.1.13
+- allow to hand custom output path to ~compile~
+- allow to disable ~shell~ output when compiling via ~verbose~ option
+- add ~TeXDaemon~ submodule (~latexdsl/tex_daemon.nim~) which allows
+  to spawn a TeX process, which runs in the background for you to
+  process TeX commands at will. The idea is to have a TeX compiler
+  ready on demand (without startup latency) to e.g. compute the width
+  / height / depth of a piece of text (in particular for ggplotnim's
+  TikZ backend)
 * v0.1.12
 - allow handing a custom template to ~compile~
 * v0.1.11
