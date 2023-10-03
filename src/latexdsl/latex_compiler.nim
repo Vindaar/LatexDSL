@@ -59,7 +59,7 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
   var generated = false
   template checkAndRun(cmd: untyped): untyped =
     var cfg = { dokCommand, dokError, dokOutput, dokRuntime }
-    if verbose:
+    if not verbose:
       cfg.excl dokOutput
     var
       res: string
@@ -67,13 +67,13 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
     when nimvm:
       (res, err) = gorgeEx(@[checkCmd, cmd].join(" "))
     else:
-      (res, err) = shellVerbose:
+      (res, err) = shellVerbose(debugConfig = cfg):
         ($checkCmd) ($cmd)
     if err == 0:
       when nimvm:
         (res, err) = gorgeEx(@[$cmd, "-output-directory", $path, $fname].join(" "))
       else:
-        (res, err) = shellVerbose:
+        (res, err) = shellVerbose(debugConfig = cfg):
           ($cmd) "-output-directory" ($path) ($fname)
       if err == 0:
         # successfully generated
