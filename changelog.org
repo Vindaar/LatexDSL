@@ -1,3 +1,6 @@
+* v0.1.14
+- fixes the ~verbose~ argument to ~compile~ such that it actually
+  takes effect
 * v0.1.13
 - allow to hand custom output path to ~compile~
 - allow to disable ~shell~ output when compiling via ~verbose~ option
