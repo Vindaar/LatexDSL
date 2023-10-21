@@ -1,3 +1,10 @@
+* v0.2.0
+- ~DEBUG_TEX~ can be set as an environment variable to overwrite the
+  verbosity setting of the LaTeX compiler
+- the priority of the LaTeX compilers was changed to prefer LuaLaTeX
+  over XeLaTeX due to its saner font handling
+- adds three configuration files, for the preamble and XeLaTeX and
+  LuaLaTeX font settings (see README)
 * v0.1.14
 - fixes the ~verbose~ argument to ~compile~ such that it actually
   takes effect
