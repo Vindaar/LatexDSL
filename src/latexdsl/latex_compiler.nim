@@ -7,17 +7,75 @@ import std / [strutils, os]
 # nimble
 import pkg / shell
 
+const cfgPreamble = "common_preamble.tex"
+const cfgXeLaTeX = "xelatex_fonts.tex"
+const cfgLuaLaTeX = "lualatex_fonts.tex"
+func f(fn: string): string = getConfigDir() / "latexdsl" / fn
+## These define the used preamble and font settings based on files in the users
+## configuration directory. If they don't exist we use the hardcoded values from
+## below.
+let PreambleText* = if fileExists(f(cfgPreamble)): readFile(f(cfgPreamble))
+                   else: ""
+let XeFonts*  = if fileExists(f(cfgXeLaTeX)): readFile(f(cfgXeLaTeX))
+                   else: ""
+let LuaFonts* = if fileExists(f(cfgLuaLaTeX)): readFile(f(cfgLuaLaTeX))
+                   else: ""
+
 proc getStandaloneTmpl(): string =
+  let common = if PreambleText.len > 0: PreambleText
+               else:
+                 latex:
+                   \usepackage[utf8]{inputenc}
+                   \usepackage[margin="2.5cm"]{geometry}
+                   \usepackage{unicode-math} # for unicode support in math environments
+                   \usepackage{amsmath}
+                   \usepackage{siunitx}
+                   \usepackage{booktabs}
   result = latex:
     \documentclass[border = "2mm", varwidth]{standalone}
-    \usepackage[utf8]{inputenc}
-    \usepackage[margin="2.5cm"]{geometry}
-    \usepackage{unicode-math} # for unicode support in math environments
-    \usepackage{amsmath}
-    \usepackage{siunitx}
-    \usepackage{booktabs}
+    `common`
     document:
       "$#"
+
+proc xelatexFontSettings*(): string =
+  ## XXX: This XeLaTeX support is pretty crappy and easily breaks. :( If someone
+  ## knows how to make it robust without specifying every single character or
+  ## "unicode class" (of ucharclasses) I'm happy to hear it.
+  result = if XeFonts.len > 0: XeFonts
+           else:
+             """
+\usepackage{fontspec}
+\usepackage{ucharclasses}
+
+% Set main font as Latin Modern Roman (vectorized Computer Modern)
+\setmainfont{CMU Serif}[Ligatures=TeX]
+
+% Fallback font for non-ASCII characters
+\newfontfamily{\fallbackfont}{DejaVu Serif}[Ligatures=TeX]
+\newfontfamily{\mainfont}{CMU Serif}[Ligatures=TeX]
+\setDefaultTransitions{\fallbackfont}{}
+"""
+
+proc lualatexFontSettings*(): string =
+  result = if LuaFonts.len > 0: LuaFonts
+           else:
+             """
+\usepackage{fontspec}
+
+\directlua{
+  luaotfload.add_fallback(
+  "FallbackFonts",
+  {
+        "DejaVu Serif:mode=harf;",
+        "DejaVu Sans Mono:mode=harf;",
+        % we could add many more fonts here optionally!
+    }
+  )
+}
+
+\setmainfont{CMU Serif}[RawFeature={fallback=FallbackFonts}]
+\setmonofont{Inconsolata}[RawFeature={fallback=FallbackFonts}]
+"""
 
 proc writeTeXFile*(fname, body, tmpl: string,
                    fullBody = false) =
@@ -29,6 +87,7 @@ proc writeTeXFile*(fname, body, tmpl: string,
     f.write(tmpl)
     f.close()
 
+import std / [envvars, strutils]
 proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
               path = "", fullBody = false, verbose = true) =
   ## Writes and compiles the file `fname` with contents `body`. If no explicit
@@ -69,6 +128,15 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
       (res, err) = shellVerbose(debugConfig = cfg):
         ($checkCmd) ($cmd)
     if err == 0:
+      # 1. patch the TeX file depending on the compiler
+      let fontSettings =
+        case cmd
+        of "xelatex": xelatexFontSettings()
+        of "lualatex": lualatexFontSettings()
+        else: ""
+      let body = body.replace(r"\begin{document}", fontSettings & "\n" & r"\begin{document}")
+      # 2. write the TeX file with injected body
+      writeTexFile(fname, body, tmpl, fullBody)
       when nimvm:
         (res, err) = gorgeEx(@[$cmd, "-output-directory", $path, $fname].join(" "))
       else:
