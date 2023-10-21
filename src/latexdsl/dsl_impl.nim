@@ -227,7 +227,7 @@ proc toTex(n: NimNode): NimNode =
   of nnkAccQuoted: result = nnkCall.newTree(ident"$", n[0])
   of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit:
     let nStr = n.strVal
-    result = if nStr == "\\\\": newLit "\\" else: newLit nStr
+    result = if nStr == "\\\\": newLit r"\\" else: newLit nStr
   of nnkIntLit, nnkFloatLit: result = n.toStrLit
   of nnkNilLit: result = newLit ""
   of nnkCall:
