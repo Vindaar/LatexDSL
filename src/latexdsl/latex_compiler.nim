@@ -41,14 +41,13 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
   if fname.endsWith(".pdf"):
     echo "[WARNING] Given filename `", fname, "` ends with .pdf. This means we overwrite the temporary ",
      ".tex file that is created!"
-
-  # 1. write the file
-  writeTexFile(fname, body, tmpl, fullBody)
+  # Allow overwriting by `DEBUG_TEX` environment variable.
+  let verbose = getEnv("DEBUG_TEX", $verbose).parseBool
 
   # get path
   let path = if path.len > 0: path else: fname.parentDir
 
-  # 2. compile
+  # 1. define command to check if TeX compiler exists
   when defined(linux) or defined(macosx):
     let checkCmd = "command -v"
   elif defined(windows):
@@ -81,12 +80,15 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
         if not verbose: # only print in this case, otherwise the TeX output shows something similar
           echo "Generated: ", fname.replace(".tex", ".pdf")
       else:
-        raise newException(IOError, "Could not generate PDF from TeX file `" & $fname &
-          & "` using TeX compiler: `" & $cmd & "`. Output was: " & res)
-  checkAndRun("xelatex")
-  if generated: return # success, no need to try `lualatex`
-  ## NOTE: lualatex is 2nd as it's a slower compiler than xelatex
+        echo "Could not generate PDF from TeX file `" & $fname &
+          & "` using TeX compiler: `" & $cmd & "`. Output was: " & res
+        #raise newException(IOError, "Could not generate PDF from TeX file `" & $fname &
+        #  & "` using TeX compiler: `" & $cmd & "`. Output was: " & res)
+  ## Note: `xelatex` may be a bit slower than `xelatex` but at least it has sane
+  ## font handling!
   checkAndRun("lualatex")
+  if generated: return # success, no need to try `xelatex`
+  checkAndRun("xelatex")
   if generated: return # success, no need to try `pdflatex`
   checkAndRun("pdflatex") # currently broken, as we import `unicode-math`
   if not generated:
