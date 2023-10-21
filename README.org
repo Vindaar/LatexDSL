@@ -81,6 +81,82 @@ The compile time checks are done on:
 In case a command is not part of the =enum= yet, you can omit the CT
 check by prepending with two =\\= instead of one.
 
+** LaTeX compiler and configuration files
+
+LatexDSL comes with an interface to LaTeX compilers
+(~latexdsl/latex_compiler.nim~) to quickly compile snippets of TeX for
+you. By default it first tries to use ~lualatex~, then falls back to
+~xelatex~ and finally ~pdflatex~ if either is not found. ~lualatex~
+has the most sane font handling and can handle large TikZ files
+without problem, hence it is the default (despite being a little bit
+slower than ~xelatex~).
+
+LatexDSL uses multiple configuration files to adjust the TeX preamble
+and font settings when the LaTeX compiler is used (for example when using the
+TikZ backend of ~ggplotnim~).
+
+1. a configuration file for the common TeX preamble which should be
+   inserted into each file, ~getConfigDir() / "latexdsl" /
+   "common_preamble.tex"~. My current configuration for example looks
+   like this:
+   #+begin_src latex
+\usepackage[utf8]{inputenc}
+\usepackage{unicode-math} % for unicode support in math environments
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\sisetup{mode=text,range-phrase = {\text{~to~}}, range-units=single, print-unity-mantissa=false}
+\usepackage{mhchem}
+\usepackage{tikz}
+   #+end_src
+2. Font settings for XeLaTeX can be adjusted by ~getConfigDir() / "latexdsl" /
+   "xelatex_fonts.tex"~. My current configuration for example looks
+   like this:
+   #+begin_src latex
+\usepackage{fontspec}
+\usepackage{ucharclasses}
+
+% Set main font as Latin Modern Roman (vectorized Computer Modern)
+\setmainfont{CMU Serif}[Ligatures=TeX]
+
+% Fallback font for non-ASCII characters
+\newfontfamily{\fallbackfont}{DejaVu Serif}[Ligatures=TeX]
+% And back to default
+\newfontfamily{\mainfont}{CMU Serif}[Ligatures=TeX]
+\setDefaultTransitions{\fallbackfont}{}
+   #+end_src
+   But note that handling unicode characters in this way is kind of
+   broken in my experience. Hence why I use ~lualatex~ by default.
+3. Font settings for LuaLaTeX can be adjusted by ~getConfigDir() / "latexdsl" /
+   "lualatex_fonts.tex"~. My current configuration for example looks
+   like this:
+   #+begin_src latex
+\usepackage{fontspec}
+
+\directlua{
+  luaotfload.add_fallback(
+  "FallbackFonts",
+  {
+        "DejaVu Serif:mode=harf;",
+        "DejaVu Sans Mono:mode=harf;",
+        % we could add many more fonts here optionally!
+    }
+  )
+}
+
+\setmainfont{CMU Serif}[RawFeature={fallback=FallbackFonts}]
+\setmonofont{Inconsolata}[RawFeature={fallback=FallbackFonts}]
+   #+end_src
+
+These configuration snippets will be inserted into your preamble
+automatically if you run the ~compile~ command. Defaults similar to
+the above are used if no configuration files exist.
+
+*NOTE*: Because the font settings are compiler specific they need to
+be spliced into the TeX body given to the ~compile~ command. It
+replaces ~\begin{document}~ by the font settings and
+~\begin{document}~.
+   
 ** An example of available sugar
 
 Without making this example more complicated than necessary, let's
