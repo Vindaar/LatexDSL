@@ -31,7 +31,9 @@ proc close*(td: TexDaemon) =
   if td.isReady:
     td.write(r"\end{document}") # this should shut down the interpreter
     discard td.read()
-    doAssert not td.pid.running
+    if td.pid.running:
+      terminate(td.pid)
+    #doAssert not td.pid.running
   else:
     doAssert not td.pid.running
 
