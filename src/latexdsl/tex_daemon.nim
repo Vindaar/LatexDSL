@@ -59,7 +59,7 @@ proc process*(d: TeXDaemon, data: string) =
   ## an initial setup.
   ## This simply discards all read data.
   for line in data.strip.splitLines:
-    d.write(line) # write one line
+    d.write(line.strip) # write one line
     discard d.read() # read back data, but discard
 
 when isMainModule:
