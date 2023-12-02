@@ -116,9 +116,9 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
 
   var generated = false
   template checkAndRun(cmd: untyped): untyped =
-    var cfg = { dokCommand, dokError, dokOutput, dokRuntime }
-    if not verbose:
-      cfg.excl dokOutput
+    var cfg = { dokCommand, dokError, dokRuntime }
+    if verbose:
+      cfg.incl dokOutput
     var
       res: string
       err: int
