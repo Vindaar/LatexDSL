@@ -1,5 +1,8 @@
 import std / [osproc, streams, strutils, strscans]
 
+from std / os import getEnv
+var DebugTexDaemon = getEnv("DEBUG_TEX", "false").parseBool
+
 type
   TeXDaemon* = object
     isReady*: bool
@@ -9,6 +12,8 @@ type
 
 proc write*(d: TeXDaemon, line: string) =
   if d.pid.running:
+    if DebugTexDaemon:
+      echo "Writing: ", line
     d.stdin.write(line & "\n")
     d.stdin.flush()
   else:
@@ -24,6 +29,8 @@ proc read*(d: TeXDaemon): string =
       c = d.stdout.readChar()
       data.add c
     result = data
+    if DebugTexDaemon:
+      echo "Read: ", result
   else:
     raise newException(IOError, "The TeXDaemon is not running anymore. Reading failed.")
 
