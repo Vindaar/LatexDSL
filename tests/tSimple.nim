@@ -67,7 +67,7 @@ suite "LaTeX DSL simple tests":
       \documentclass{article}
       \usepackage[`lang`]{babel}
       \usepackage[utf8]{inputenc}
-      \\newcolumntype{Y}{r">{\raggedleft\arraybackslash}X"}
+      \newcolumntype{Y}{r">{\raggedleft\arraybackslash}X"}
 
     check res == exp2
 
