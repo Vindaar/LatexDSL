@@ -87,7 +87,10 @@ proc writeTeXFile*(fname, body, tmpl: string,
     f.write(tmpl)
     f.close()
 
-import std / [envvars, strutils]
+when (NimMajor, NimMinor, NimPatch) >= (2, 0, 0):
+  import std / [envvars, strutils]
+else:
+  import std / [os, strutils]
 proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
               path = "", fullBody = false, verbose = true) =
   ## Writes and compiles the file `fname` with contents `body`. If no explicit
