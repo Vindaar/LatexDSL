@@ -10,7 +10,7 @@ import pkg / shell
 const cfgPreamble = "common_preamble.tex"
 const cfgXeLaTeX = "xelatex_fonts.tex"
 const cfgLuaLaTeX = "lualatex_fonts.tex"
-func f(fn: string): string = getConfigDir() / "latexdsl" / fn
+proc f(fn: string): string = getConfigDir() / "latexdsl" / fn
 ## These define the used preamble and font settings based on files in the users
 ## configuration directory. If they don't exist we use the hardcoded values from
 ## below.
