@@ -218,6 +218,8 @@ proc parseBody(n: NimNode): NimNode =
   of nnkIdent: result = toTex(n)
   of nnkIntLit, nnkFloatLit: result = toTex(n)
   of nnkAccQuoted: result = toTex(n)
+  of nnkCommentStmt: result = toTex(n)
+  #of nnkPar: result = toTex(n)
   else:
     error("Invalid kind " & $n.kind)
 
@@ -237,6 +239,11 @@ proc toTex(n: NimNode): NimNode =
       result = n
     else:
       result = parseBody(n)
+  of nnkCommentStmt:
+    var cmt: string
+    for el in n.strVal.splitLines:
+      cmt.add "%" & el
+    result = newLit(cmt)
   else: result = parseBody(n)
 
 proc unsym(n: NimNode): NimNode =
