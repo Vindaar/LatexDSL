@@ -137,7 +137,9 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
         of "xelatex": xelatexFontSettings()
         of "lualatex": lualatexFontSettings()
         else: ""
-      let body = body.replace(r"\begin{document}", fontSettings & "\n" & r"\begin{document}")
+      var body = body
+      if not fullBody:
+        body = body.replace(r"\begin{document}", fontSettings & "\n" & r"\begin{document}")
       # 2. write the TeX file with injected body
       writeTexFile(fname, body, tmpl, fullBody)
       when nimvm:
