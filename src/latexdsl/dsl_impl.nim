@@ -223,10 +223,39 @@ proc parseBody(n: NimNode): NimNode =
   else:
     error("Invalid kind " & $n.kind)
 
+proc fromAccToDotExpr(n: NimNode): NimNode =
+  ## Turns a accent quoted node back into a dot expression to evaluate
+  ## the quoted Nim expression.
+  doAssert n.kind == nnkAccQuoted
+  if n.len == 1:
+    result = nnkCall.newTree(ident"$", n[0])
+  elif n.len mod 2 == 0:
+    error("Invalid term in accent quoted: " & $n.treerepr & ". Only supports " &
+      "dot expressions at the moment, e.g. `foo.bar.baz`.")
+  else:
+    var res: NimNode
+    for i in countup(0, n.len - 2, 2):
+      ## This processes:
+      ## AccQuoted
+      ##   Ident "cv"      Iter 0, i = 0
+      ##   Ident "."       Iter 0, i = 1
+      ##   Ident "cfg"     Iter 0, i = 2;   Iter 1, i = 0
+      ##   Ident "."                        Iter 1, i = 1
+      ##   Ident "pEmail"                   Iter 1, i = 2
+      ## so we reassign to `res` below.
+      doAssert n[i+1].kind == nnkIdent and n[i+1].strVal == ".", "The node at index : " & $i & " is not a `.`. Invalid " &
+        "node in accent quote: " & $n.treerepr
+      if res == nil:
+        res = nnkDotExpr.newTree(n[i], n[i+2])
+      else:
+        # in this case `n[i]` already processed in `res`
+        res = nnkDotExpr.newTree(res, n[i+2])
+    result = res
+
 proc toTex(n: NimNode): NimNode =
   case n.kind
   of nnkSym: result = n
-  of nnkAccQuoted: result = nnkCall.newTree(ident"$", n[0])
+  of nnkAccQuoted: result = fromAccToDotExpr(n)
   of nnkIdent, nnkStrLit, nnkTripleStrLit, nnkRStrLit:
     let nStr = n.strVal
     result = if nStr == "\\\\": newLit r"\\" else: newLit nStr
