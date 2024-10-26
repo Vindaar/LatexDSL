@@ -1,3 +1,13 @@
+* v0.2.1
+- support Nim doc comments and turn them into LaTeX comments
+- support complex expressions in a quote, i.e. `x.foo.bar`.
+  *Note*: *Only* dot expressions are supported. Call or command syntax
+  are not allowed!
+- *Potentially breaking* (unlikely): If you used the ~compile~ helper
+  with ~fullBody = true~, previously it injected a ~\begin/end
+  document~ around the given body. That is not really very useful, if
+  one wants to pass a full TeX file to compile including header and
+  everything. 
 * v0.2.0
 - ~DEBUG_TEX~ can be set as an environment variable to overwrite the
   verbosity setting of the LaTeX compiler
