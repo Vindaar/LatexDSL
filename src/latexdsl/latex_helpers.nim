@@ -8,8 +8,8 @@ type
     $v is string
   DataFrameLike* = concept df
     df.getKeys() is seq[string]
-    df.row(int) is ValueLike
-    df.len is int
+    df.row(system.int) is ValueLike
+    df.len is system.int
 
   AlignmentKind* = enum
     akNone = ""
