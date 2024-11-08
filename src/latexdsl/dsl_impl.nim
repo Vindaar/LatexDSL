@@ -58,7 +58,10 @@ proc makeBeginEnd*(name, header, body: string): string =
   when (NimMajor, NimMinor, NimPatch) > (1, 7, 0):
     let delim = MathDelim
   else:
-    const delim = MathDelim
+    when not defined(js):
+      const delim = MathDelim
+    else:
+      let delim = MathDelim
   if name == "math":
     result = delim & $body & delim
   else:
