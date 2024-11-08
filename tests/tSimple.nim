@@ -103,11 +103,12 @@ suite "LaTeX DSL simple tests":
     doAssertRaises(ValueError):
       let res = figure(path, caption)
 
-  test "Checking for file in `figure` works as expected":
-    let path = "/tmp/my_figure.pdf"
-    let caption = "A fancy plot it is!"
-    doAssertRaises(AssertionError):
-      let res = figure(path, caption, width = textwidth(0.8), checkFile = true)
+  when not defined(js):
+    test "Checking for file in `figure` works as expected":
+      let path = "/tmp/my_figure.pdf"
+      let caption = "A fancy plot it is!"
+      doAssertRaises(AssertionError):
+        let res = figure(path, caption, width = textwidth(0.8), checkFile = true)
 
   test "Multiline `{}` using pragma syntax":
     let exp = """
