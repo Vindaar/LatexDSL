@@ -32,6 +32,10 @@ when canImport(docs / docs):
 task test, "Run the tests":
   exec "nim r tests/tSimple.nim"
   exec "nim r tests/tMathDelim.nim"
+  # run on JS target
+  exec "nim js -r tests/tSimple.nim"
+  exec "nim js -r tests/tMathDelim.nim"
+
 
 task testDeps, "Installs dependencies for tests":
   exec "nimble install -y datamancer"

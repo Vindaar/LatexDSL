@@ -177,13 +177,14 @@ line 3
         e^{\pi i} = -1
     check $b.strip == r"$e^{\pi i}=-1$"
 
-  test "`latex` can be used in CT context":
-    const b = latex:
-      math:
-        e^{\pi i} = -1
-    static:
-      echo $b
-      doAssert $b.strip == r"$e^{\pi i}=-1$", " was ? " & $b
+  when not defined(js):
+    test "`latex` can be used in CT context":
+      const b = latex:
+        math:
+          e^{\pi i} = -1
+      static:
+        echo $b
+        doAssert $b.strip == r"$e^{\pi i}=-1$", " was ? " & $b
 
   test "`latex` can be used inside a template (unsym)":
     template nbMath(body: untyped): untyped =
