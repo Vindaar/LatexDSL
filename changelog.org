@@ -1,3 +1,6 @@
+* v0.2.2
+- support JavaScript as a target (does not support the TeX compiler
+  obviously, nor works at compile time)
 * v0.2.1
 - support Nim doc comments and turn them into LaTeX comments
 - support complex expressions in a quote, i.e. `x.foo.bar`.
