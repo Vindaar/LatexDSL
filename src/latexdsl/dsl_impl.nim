@@ -8,7 +8,10 @@ else:
   import valid_tex_commands
 
 ## Decides the math delimiter to use
-var MathDelim* {.compileTime.} = "$"
+when not defined(js):
+  var MathDelim* {.compileTime.} = "$"
+else: # on the JS backend a compileTime variable causes an ICE
+  var MathDelim* = "$" # runtime variable
 
 proc `&&`(n, m: NimNode): NimNode = nnkCall.newTree(ident"&&", n, m)
 

@@ -1,4 +1,6 @@
-import os, strutils, sequtils
+import std/[strutils, sequtils]
+when not defined(js):
+  import std/os # for fileExsits
 
 import dsl_impl, valid_tex_commands
 
@@ -50,9 +52,10 @@ proc figure*(path: string,
                "height=" & height
              else:
                raise newException(ValueError, "Please hand either a width or a height!")
-  if checkFile:
-    doAssert fileExists(path), "The file " & $path & " for which to generate TeX " &
-      "doesn't exist yet!"
+  when not defined(js):
+    if checkFile:
+      doAssert fileExists(path), "The file " & $path & " for which to generate TeX " &
+        "doesn't exist yet!"
   var mainBody = latex:
     \centering
     \includegraphics[`size`]{`path`}
