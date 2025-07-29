@@ -49,6 +49,23 @@ const expFigure = """
 \end{figure}
 """
 
+const expFor = """
+\begin{tabular}{|r|l|l|l|}
+\hline
+ & a & b & c
+\\
+\hline
+\textbf{0}
+ & 1 & 2 & 3
+\\\textbf{1}
+ & 4 & 5 & 6
+\\\textbf{2}
+ & 7 & 8 & 9
+\\
+\hline
+\end{tabular}
+"""
+
 suite "LaTeX DSL simple tests":
   test "Multiple TeX statementsn":
     let res = latex:
@@ -83,6 +100,23 @@ suite "LaTeX DSL simple tests":
         figure:
           \includegraphics[width=r"0.8\textwidth"]{myImage}
     check res.strip == exp4.strip
+
+
+  test "for statements":
+    let res = latex:
+      tabular{"|r|l|l|l|"}:
+        \hline
+        for title in ["a", "b", "c"]:
+          " &" `title`
+        r"\\"
+        \hline
+        for i, v in [[1, 2, 3], [4, 5, 6], [7, 8, 9]]:
+          \textbf{`i`}
+          for v in v:
+            " &" `v`
+          r"\\"
+        \hline 
+    check res.strip == expFor.strip
 
 
   test "textwidth/height":

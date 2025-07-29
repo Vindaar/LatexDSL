@@ -226,6 +226,15 @@ proc parseBody(n: NimNode): NimNode =
   of nnkAccQuoted: result = toTex(n)
   of nnkCommentStmt: result = toTex(n)
   #of nnkPar: result = toTex(n)
+  of nnkForStmt:
+    var n = n
+    let tmp = genSym(nskVar, "tmp")
+    n[^1] = newAssignment(tmp, tmp && toTex(n[^1]))
+    result = quote do:
+      block:
+        var `tmp`: string
+        `n`
+        `tmp`
   else:
     error("Invalid kind " & $n.kind)
 

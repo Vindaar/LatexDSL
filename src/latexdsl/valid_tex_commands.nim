@@ -51,7 +51,7 @@ type
     makeglossary, makeindex, maketitle, mapsto, marginparpush, marginparsep,
     marginpartext, marginparwidth, markbothlhd, markrightrhd, math, max, mbox,
     mboxtext, medskip, medskipamount, mho, mid, midrule, min, minipage, mit,
-    models, month, mp, mu, multicolumnnoc, multiput, nabla, natural, ne,
+    models, month, mp, mu, multicolumn, multiput, nabla, natural, ne,
     nearrow, neg, neq, newcolumntype, newcommand, newcountercounter,
     newenvironment, newenvironmentenvname, newfontcs, newlength, newline,
     newpage, newtheorem, newtheoremenv, ni, nl, nofiles, noindent,
