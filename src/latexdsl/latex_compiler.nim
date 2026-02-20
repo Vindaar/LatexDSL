@@ -142,6 +142,11 @@ proc compile*(fname, body: string, tmpl = getStandaloneTmpl(),
         body = body.replace(r"\begin{document}", fontSettings & "\n" & r"\begin{document}")
       # 2. write the TeX file with injected body
       writeTexFile(fname, body, tmpl, fullBody)
+      # 3. remove stale .aux file to avoid errors from previous compilations
+      #    (e.g. leftover biblatex commands like `\abx@aux@refcontext`)
+      let auxFile = fname.changeFileExt(".aux")
+      if fileExists(auxFile):
+        removeFile(auxFile)
       when nimvm:
         (res, err) = gorgeEx(@[$cmd, "-output-directory", $path, $fname].join(" "))
       else:
